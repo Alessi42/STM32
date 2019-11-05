@@ -21,6 +21,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "usb_host.h"
+<<<<<<< Updated upstream
+=======
+#include "display.h"
+#include "adc.h"
+>>>>>>> Stashed changes
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -42,7 +47,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-ADC_HandleTypeDef hadc1;
+// ADC handler that gets setup in main
 
 I2C_HandleTypeDef hi2c1;
 I2C_HandleTypeDef hi2c2;
@@ -62,16 +67,21 @@ UART_HandleTypeDef huart2;
 
 TIM_HandleTypeDef Timer4Handle;
 
-int g_ADCValue = 0;
-
-#define NUM_OF_SAMPLES 10
-_Bool activeBuffer = 0;
-uint32_t ADCBuffer0[NUM_OF_SAMPLES];
-uint32_t ADCBuffer1[NUM_OF_SAMPLES];
 
 
 
 /* USER CODE BEGIN PV */
+#define NUM_OF_FFT_SAMPLES 10
+
+// Current ADC value being read
+int g_ADCValue = 0;
+
+// which buffer we're currently writing to
+_Bool activeBuffer = 0;
+
+// Double buffers the length of the fourier transform length
+uint32_t ADCBuffer0[NUM_OF_FFT_SAMPLES];
+uint32_t ADCBuffer1[NUM_OF_FFT_SAMPLES];
 
 /* USER CODE END PV */
 
@@ -85,31 +95,9 @@ static void MX_QUADSPI_Init(void);
 static void MX_SAI1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_USART2_UART_Init(void);
-static void MX_ADC1_Init(void);
+//static void MX_ADC1_Init(void);
 static void MX_TIM4_Init(void);
 void MX_USB_HOST_Process(void);
-
-void readADC() {
-	static int bufferIndex = 0;
-	HAL_ADC_Start(&hadc1);
-	if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK) {
-		g_ADCValue = HAL_ADC_GetValue(&hadc1);
-		// setup a double buffer so that values do not get overwritten and are continuous
-		// could also do a double length buffer and detect which half we're in
-		if (!activeBuffer) {
-			ADCBuffer0[bufferIndex] = g_ADCValue;
-		} else {
-			ADCBuffer1[bufferIndex] = g_ADCValue;
-		}
-		bufferIndex++;
-	}
-	if (bufferIndex > NUM_OF_SAMPLES) {
-		// reset the index to write from the start and change to the next buffer
-		bufferIndex = 0;
-		activeBuffer = !activeBuffer;
-	}
-	HAL_ADC_Stop(&hadc1);
-}
 
 /* USER CODE BEGIN PFP */
 
@@ -117,11 +105,37 @@ void readADC() {
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void addToDoubleBuffer(uint32_t value) {
+	static int bufferIndex = 0;
+	// setup a double buffer so that values do not get overwritten and are continuous
+	// could also do a double length buffer and detect which half we're in
+	if (!activeBuffer) {
+		ADCBuffer0[bufferIndex] = value;
+	} else {
+		ADCBuffer1[bufferIndex] = value;
+	}
+	bufferIndex++;
+	if (bufferIndex > NUM_OF_FFT_SAMPLES) {
+		// reset the index to write from the start and change to the next buffer
+		bufferIndex = 0;
+		activeBuffer = !activeBuffer;
+	}
+}
+
 void TIM4_IRQHandler(void)
 {
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
+
+	// read adc value
+	g_ADCValue = readADC();
+
+	// add value to double buffer
+	addToDoubleBuffer(g_ADCValue);
+
+	// Write the value on serial
 	TransmitUART();
-	readADC();
+
+	// clear the flag for resetting the timer
 	__HAL_TIM_CLEAR_FLAG(&Timer4Handle, TIM_FLAG_UPDATE);
 }
 /* USER CODE END 0 */
@@ -163,7 +177,7 @@ int main(void)
   MX_SPI2_Init();
   MX_USART2_UART_Init();
   MX_USB_HOST_Init();
-  MX_ADC1_Init();
+  ADC_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
@@ -179,6 +193,7 @@ int main(void)
     //MX_USB_HOST_Process();
     //HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);
     //HAL_Delay(100);
+<<<<<<< Updated upstream
 	// crude way of showing g_ADCValue
 	int test = ADCBuffer1[0];
 	int onTime = g_ADCValue;
@@ -190,6 +205,13 @@ int main(void)
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
 	for (int i = 0; i < offTime; i++)
 	  asm("nop");
+=======
+
+	UserInterface();
+	ValueDisplay(g_ADCValue,0);
+
+	displayADC();
+>>>>>>> Stashed changes
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -294,72 +316,7 @@ void SystemClock_Config(void)
   HAL_RCCEx_EnableMSIPLLMode();
 }
 
-/**
-  * @brief ADC1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_ADC1_Init(void)
-{
 
-  /* USER CODE BEGIN ADC1_Init 0 */
-
-  __ADC_CLK_ENABLE();
-  /* USER CODE END ADC1_Init 0 */
-
-  ADC_MultiModeTypeDef multimode = {0};
-  ADC_ChannelConfTypeDef sConfig = {0};
-
-  /* USER CODE BEGIN ADC1_Init 1 */
-
-  /* USER CODE END ADC1_Init 1 */
-  /** Common config 
-  */
-  hadc1.Instance = ADC1;
-  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
-  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
-  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-  //hadc1.Init.LowPowerAutoWait = DISABLE;
-  hadc1.Init.ContinuousConvMode = DISABLE;
-  hadc1.Init.NbrOfConversion = 1;
-  hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START; // Need to run start to trigger conversion?
-  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc1.Init.DMAContinuousRequests = DISABLE;
-  hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
-  hadc1.Init.OversamplingMode = DISABLE;
-
-  if (HAL_ADC_Init(&hadc1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Configure the ADC multi-mode 
-  */
-  multimode.Mode = ADC_MODE_INDEPENDENT;
-  if (HAL_ADCEx_MultiModeConfigChannel(&hadc1, &multimode) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Configure Regular Channel 
-  */
-  sConfig.Channel = ADC_CHANNEL_5;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
-  sConfig.SingleDiff = ADC_SINGLE_ENDED;
-  sConfig.OffsetNumber = ADC_OFFSET_NONE;
-  sConfig.Offset = 0;
-
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC1_Init 2 */
-
-  /* USER CODE END ADC1_Init 2 */
-
-}
 
 /**
   * @brief I2C1 Initialization Function
