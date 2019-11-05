@@ -92,6 +92,7 @@ void MX_USB_HOST_Process(void);
 void TIM4_IRQHandler(void)
 {
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
+	TransmitUART();
 	HAL_ADC_Start(&hadc1);
 	if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK)
 	{
@@ -152,7 +153,6 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	TransmitUART();
     //MX_USB_HOST_Process();
     //HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);
     //HAL_Delay(100);
@@ -171,10 +171,23 @@ int main(void)
   /* USER CODE END 3 */
 }
 
+float ADCToVoltage(int ADCValue){
+	return 3.3 * (float)ADCValue / 4096.0;
+}
 
 void TransmitUART() {
-	char buffer[] = "test\r\n";
-	HAL_UART_Transmit(&huart2, g_ADCValue, sizeof(g_ADCValue), HAL_MAX_DELAY);
+	int num = g_ADCValue;
+	char snum[5] = "    ,";
+	// convert 123 to string [buf]
+	itoa(num, snum, 10);
+
+	// print with end line
+//	snum[3] = '\n';
+//	snum[4] = '\r';
+	// print comma separated
+	snum[4] = '\n';
+
+	HAL_UART_Transmit(&huart2, snum, sizeof(snum), HAL_MAX_DELAY);
 }
 /**
   * @brief System Clock Configuration
@@ -613,7 +626,7 @@ static void MX_TIM4_Init(void)
 	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	Timer4Handle.Init.ClockDivision = 0;
 	Timer4Handle.Init.Prescaler = 1000;
-	Timer4Handle.Init.Period = 15000;
+	Timer4Handle.Init.Period = 800;
 	__HAL_RCC_TIM4_CLK_ENABLE();
 	HAL_TIM_Base_Init(&Timer4Handle);
 	HAL_TIM_Base_Start_IT(&Timer4Handle);
