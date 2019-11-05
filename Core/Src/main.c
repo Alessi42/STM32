@@ -152,6 +152,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	TransmitUART();
     //MX_USB_HOST_Process();
     //HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);
     //HAL_Delay(100);
@@ -170,6 +171,11 @@ int main(void)
   /* USER CODE END 3 */
 }
 
+
+void TransmitUART() {
+	char buffer[] = "test\r\n";
+	HAL_UART_Transmit(&huart2, g_ADCValue, sizeof(g_ADCValue), HAL_MAX_DELAY);
+}
 /**
   * @brief System Clock Configuration
   * @retval None
