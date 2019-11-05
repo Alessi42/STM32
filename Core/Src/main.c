@@ -587,7 +587,7 @@ static void MX_TIM4_Init(void)
 	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	Timer4Handle.Init.ClockDivision = 0;
 	Timer4Handle.Init.Prescaler = 1000;
-	Timer4Handle.Init.Period = 800;
+	Timer4Handle.Init.Period = 8000;
 	__HAL_RCC_TIM4_CLK_ENABLE();
 	HAL_TIM_Base_Init(&Timer4Handle);
 	HAL_TIM_Base_Start_IT(&Timer4Handle);
