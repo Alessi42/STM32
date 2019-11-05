@@ -62,6 +62,8 @@ UART_HandleTypeDef huart2;
 
 TIM_HandleTypeDef Timer4Handle;
 
+int g_ADCValue = 0;
+
 
 /* USER CODE BEGIN PV */
 
@@ -90,6 +92,12 @@ void MX_USB_HOST_Process(void);
 void TIM4_IRQHandler(void)
 {
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
+	HAL_ADC_Start(&hadc1);
+	if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK)
+	{
+		g_ADCValue = HAL_ADC_GetValue(&hadc1);
+	}
+	HAL_ADC_Stop(&hadc1);
 	__HAL_TIM_CLEAR_FLAG(&Timer4Handle, TIM_FLAG_UPDATE);
 }
 /* USER CODE END 0 */
@@ -139,14 +147,24 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  int i =0;
+  int i = 0;
+
   while (1)
   {
     /* USER CODE END WHILE */
     //MX_USB_HOST_Process();
     //HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);
     //HAL_Delay(100);
-	  i++;
+	// crude way of showing g_ADCValue
+	int onTime = g_ADCValue;
+	int offTime = 4096 - onTime;
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
+	for (int i = 0; i < onTime; i++)
+	  asm("nop");
+
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+	for (int i = 0; i < offTime; i++)
+	  asm("nop");
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -260,15 +278,16 @@ static void MX_ADC1_Init(void)
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-  hadc1.Init.LowPowerAutoWait = ENABLE;
+  //hadc1.Init.LowPowerAutoWait = DISABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.NbrOfConversion = 1;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIG_T4_CC4;
-  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START; // Need to run start to trigger conversion?
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc1.Init.DMAContinuousRequests = DISABLE;
   hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc1.Init.OversamplingMode = DISABLE;
+
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
@@ -288,6 +307,7 @@ static void MX_ADC1_Init(void)
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
+
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -587,7 +607,7 @@ static void MX_TIM4_Init(void)
 	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	Timer4Handle.Init.ClockDivision = 0;
 	Timer4Handle.Init.Prescaler = 1000;
-	Timer4Handle.Init.Period = 8000;
+	Timer4Handle.Init.Period = 15000;
 	__HAL_RCC_TIM4_CLK_ENABLE();
 	HAL_TIM_Base_Init(&Timer4Handle);
 	HAL_TIM_Base_Start_IT(&Timer4Handle);
@@ -686,6 +706,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = JOY_LEFT_Pin|JOY_RIGHT_Pin|JOY_UP_Pin|JOY_DOWN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : MFX_WAKEUP_Pin */
