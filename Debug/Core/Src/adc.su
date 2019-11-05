@@ -1,0 +1,3 @@
+adc.c:13:10:readADC	8	static
+adc.c:28:6:displayADC	24	static,ignoring_inline_asm
+adc.c:48:6:ADC_Init	48	static

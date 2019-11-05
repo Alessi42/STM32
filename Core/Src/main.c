@@ -23,7 +23,6 @@
 #include "usb_host.h"
 #include "display.h"
 #include "adc.h"
-#include "display.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
