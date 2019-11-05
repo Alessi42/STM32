@@ -45,9 +45,9 @@ Drivers/STM32L476G-Discovery/stm32l476g_discovery_idd.o: \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_hcd.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_usb.h \
  ../Drivers/STM32L476G-Discovery/../Components/mfxstm32l152/mfxstm32l152.h \
- ../Drivers/STM32L476G-Discovery/../Components/mfxstm32l152/../Common/ts.h \
- ../Drivers/STM32L476G-Discovery/../Components/mfxstm32l152/../Common/io.h \
- ../Drivers/STM32L476G-Discovery/../Components/mfxstm32l152/../Common/idd.h
+ c:\users\laptop\documents\projects\stm32\drivers\components\common\ts.h \
+ c:\users\laptop\documents\projects\stm32\drivers\components\common\io.h \
+ c:\users\laptop\documents\projects\stm32\drivers\components\common\idd.h
 
 ../Drivers/STM32L476G-Discovery/stm32l476g_discovery_idd.h:
 
@@ -139,8 +139,8 @@ Drivers/STM32L476G-Discovery/stm32l476g_discovery_idd.o: \
 
 ../Drivers/STM32L476G-Discovery/../Components/mfxstm32l152/mfxstm32l152.h:
 
-../Drivers/STM32L476G-Discovery/../Components/mfxstm32l152/../Common/ts.h:
+c:\users\laptop\documents\projects\stm32\drivers\components\common\ts.h:
 
-../Drivers/STM32L476G-Discovery/../Components/mfxstm32l152/../Common/io.h:
+c:\users\laptop\documents\projects\stm32\drivers\components\common\io.h:
 
-../Drivers/STM32L476G-Discovery/../Components/mfxstm32l152/../Common/idd.h:
+c:\users\laptop\documents\projects\stm32\drivers\components\common\idd.h:

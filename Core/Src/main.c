@@ -21,11 +21,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "usb_host.h"
-<<<<<<< Updated upstream
-=======
 #include "display.h"
 #include "adc.h"
->>>>>>> Stashed changes
+#include "display.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -149,7 +147,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-  
+
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -181,6 +179,8 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
+  BSP_LCD_GLASS_Init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -193,25 +193,11 @@ int main(void)
     //MX_USB_HOST_Process();
     //HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);
     //HAL_Delay(100);
-<<<<<<< Updated upstream
-	// crude way of showing g_ADCValue
-	int test = ADCBuffer1[0];
-	int onTime = g_ADCValue;
-	int offTime = 4096 - onTime;
-	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
-	for (int i = 0; i < onTime; i++)
-	  asm("nop");
-
-	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
-	for (int i = 0; i < offTime; i++)
-	  asm("nop");
-=======
 
 	UserInterface();
 	ValueDisplay(g_ADCValue,0);
 
 	displayADC();
->>>>>>> Stashed changes
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -245,11 +231,11 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-  /** Configure LSE Drive Capability 
+  /** Configure LSE Drive Capability
   */
   HAL_PWR_EnableBkUpAccess();
   __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB busses clocks
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_LSE
                               |RCC_OSCILLATORTYPE_MSI;
@@ -269,7 +255,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB busses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -305,13 +291,13 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Configure the main internal regulator output voltage 
+  /** Configure the main internal regulator output voltage
   */
   if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
   {
     Error_Handler();
   }
-  /** Enable MSI Auto calibration 
+  /** Enable MSI Auto calibration
   */
   HAL_RCCEx_EnableMSIPLLMode();
 }
@@ -346,13 +332,13 @@ static void MX_I2C1_Init(void)
   {
     Error_Handler();
   }
-  /** Configure Analogue filter 
+  /** Configure Analogue filter
   */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
   {
     Error_Handler();
   }
-  /** Configure Digital filter 
+  /** Configure Digital filter
   */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
   {
@@ -392,13 +378,13 @@ static void MX_I2C2_Init(void)
   {
     Error_Handler();
   }
-  /** Configure Analogue filter 
+  /** Configure Analogue filter
   */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
   {
     Error_Handler();
   }
-  /** Configure Digital filter 
+  /** Configure Digital filter
   */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
   {
@@ -607,7 +593,7 @@ static void MX_TIM4_Init(void)
 	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	Timer4Handle.Init.ClockDivision = 0;
 	Timer4Handle.Init.Prescaler = 1000;
-	Timer4Handle.Init.Period = 15000;
+	Timer4Handle.Init.Period = 800;
 	__HAL_RCC_TIM4_CLK_ENABLE();
 	HAL_TIM_Base_Init(&Timer4Handle);
 	HAL_TIM_Base_Start_IT(&Timer4Handle);
@@ -807,7 +793,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(char *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
