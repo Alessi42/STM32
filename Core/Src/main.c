@@ -64,6 +64,12 @@ TIM_HandleTypeDef Timer4Handle;
 
 int g_ADCValue = 0;
 
+#define NUM_OF_SAMPLES 10
+_Bool activeBuffer = 0;
+uint32_t ADCBuffer0[NUM_OF_SAMPLES];
+uint32_t ADCBuffer1[NUM_OF_SAMPLES];
+
+
 
 /* USER CODE BEGIN PV */
 
@@ -83,6 +89,28 @@ static void MX_ADC1_Init(void);
 static void MX_TIM4_Init(void);
 void MX_USB_HOST_Process(void);
 
+void readADC() {
+	static int bufferIndex = 0;
+	HAL_ADC_Start(&hadc1);
+	if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK) {
+		g_ADCValue = HAL_ADC_GetValue(&hadc1);
+		// setup a double buffer so that values do not get overwritten and are continuous
+		// could also do a double length buffer and detect which half we're in
+		if (!activeBuffer) {
+			ADCBuffer0[bufferIndex] = g_ADCValue;
+		} else {
+			ADCBuffer1[bufferIndex] = g_ADCValue;
+		}
+		bufferIndex++;
+	}
+	if (bufferIndex > NUM_OF_SAMPLES) {
+		// reset the index to write from the start and change to the next buffer
+		bufferIndex = 0;
+		activeBuffer = !activeBuffer;
+	}
+	HAL_ADC_Stop(&hadc1);
+}
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -93,12 +121,7 @@ void TIM4_IRQHandler(void)
 {
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
 	TransmitUART();
-	HAL_ADC_Start(&hadc1);
-	if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK)
-	{
-		g_ADCValue = HAL_ADC_GetValue(&hadc1);
-	}
-	HAL_ADC_Stop(&hadc1);
+	readADC();
 	__HAL_TIM_CLEAR_FLAG(&Timer4Handle, TIM_FLAG_UPDATE);
 }
 /* USER CODE END 0 */
@@ -157,6 +180,7 @@ int main(void)
     //HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);
     //HAL_Delay(100);
 	// crude way of showing g_ADCValue
+	int test = ADCBuffer1[0];
 	int onTime = g_ADCValue;
 	int offTime = 4096 - onTime;
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
@@ -626,7 +650,7 @@ static void MX_TIM4_Init(void)
 	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	Timer4Handle.Init.ClockDivision = 0;
 	Timer4Handle.Init.Prescaler = 1000;
-	Timer4Handle.Init.Period = 800;
+	Timer4Handle.Init.Period = 15000;
 	__HAL_RCC_TIM4_CLK_ENABLE();
 	HAL_TIM_Base_Init(&Timer4Handle);
 	HAL_TIM_Base_Start_IT(&Timer4Handle);
