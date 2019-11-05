@@ -184,6 +184,9 @@ int main(void)
     //HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);
     //HAL_Delay(100);
 	// crude way of showing g_ADCValue
+	UserInterface();
+	ValueDisplay(g_ADCValue,0);
+
 	int test = ADCBuffer1[0];
 	int onTime = g_ADCValue;
 	int offTime = 4096 - onTime;
@@ -654,7 +657,7 @@ static void MX_TIM4_Init(void)
 	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	Timer4Handle.Init.ClockDivision = 0;
 	Timer4Handle.Init.Prescaler = 1000;
-	Timer4Handle.Init.Period = 15000;
+	Timer4Handle.Init.Period = 800;
 	__HAL_RCC_TIM4_CLK_ENABLE();
 	HAL_TIM_Base_Init(&Timer4Handle);
 	HAL_TIM_Base_Start_IT(&Timer4Handle);
