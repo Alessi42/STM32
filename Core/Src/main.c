@@ -60,6 +60,9 @@ TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart2;
 
+TIM_HandleTypeDef Timer4Handle;
+
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -84,13 +87,11 @@ void MX_USB_HOST_Process(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void TIM4_IRQHandler()
+void TIM4_IRQHandler(void)
 {
-     HAL_ADC_IRQHandler(&hadc1);
-     HAL_GPIO_Toggle(GPIOB,GPIO_PIN_2);
- 	__HAL_TIM_CLEAR_FLAG(&Timer4Handle, TIM_FLAG_UPDATE);
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
+	__HAL_TIM_CLEAR_FLAG(&Timer4Handle, TIM_FLAG_UPDATE);
 }
-
 /* USER CODE END 0 */
 
 /**
@@ -138,11 +139,14 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  int i =0;
   while (1)
   {
     /* USER CODE END WHILE */
-    MX_USB_HOST_Process();
-
+    //MX_USB_HOST_Process();
+    //HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);
+    //HAL_Delay(100);
+	  i++;
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -579,43 +583,16 @@ static void MX_SPI2_Init(void)
   */
 static void MX_TIM4_Init(void)
 {
-
-  /* USER CODE BEGIN TIM4_Init 0 */
-
-  /* USER CODE END TIM4_Init 0 */
-
-  TIM_SlaveConfigTypeDef sSlaveConfig = {0};
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-
-  /* USER CODE BEGIN TIM4_Init 1 */
-
-  /* USER CODE END TIM4_Init 1 */
-  htim4.Instance = TIM4;
-  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.ClockDivision = 0;
-  htim4.Init.Prescaler = 1000;
-  htim4.Init.Period = 8000;
-
-  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sSlaveConfig.SlaveMode = TIM_SLAVEMODE_EXTERNAL1;
-  sSlaveConfig.InputTrigger = TIM_TS_ITR0;
-  if (HAL_TIM_SlaveConfigSynchro(&htim4, &sSlaveConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM4_Init 2 */
-
-  /* USER CODE END TIM4_Init 2 */
+	Timer4Handle.Instance = TIM4;
+	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
+	Timer4Handle.Init.ClockDivision = 0;
+	Timer4Handle.Init.Prescaler = 1000;
+	Timer4Handle.Init.Period = 800;
+	__HAL_RCC_TIM4_CLK_ENABLE();
+	HAL_TIM_Base_Init(&Timer4Handle);
+	HAL_TIM_Base_Start_IT(&Timer4Handle);
+	HAL_NVIC_SetPriority(TIM4_IRQn, 7, 0); // middle priority
+	HAL_NVIC_EnableIRQ(TIM4_IRQn);
 
 }
 
