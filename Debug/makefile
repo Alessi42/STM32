@@ -65,8 +65,8 @@ template.list \
 all: template.elf secondary-outputs
 
 # Tool invocations
-template.elf: $(OBJS) $(USER_OBJS) C:\Users\Laptop\Documents\Projects\STM32\STM32L476VGTX_FLASH.ld
-	arm-none-eabi-gcc -o "template.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Laptop\Documents\Projects\STM32\STM32L476VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="template.map" -Wl,--gc-sections -static -L"C:\Users\Laptop\Documents\Projects\STM32\lib" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+template.elf: $(OBJS) $(USER_OBJS) C:\Users\Aegis\Documents\Projects\STM32\STM32L476VGTX_FLASH.ld
+	arm-none-eabi-gcc -o "template.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Aegis\Documents\Projects\STM32\STM32L476VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="template.map" -Wl,--gc-sections -static -L"C:\Users\Aegis\Documents\Projects\STM32\lib" -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
