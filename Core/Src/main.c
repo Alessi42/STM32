@@ -23,6 +23,8 @@
 #include "usb_host.h"
 #include "display.h"
 #include "adc.h"
+#include "arm_math.h"
+
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -64,7 +66,7 @@ UART_HandleTypeDef huart2;
 
 TIM_HandleTypeDef Timer4Handle;
 
-
+arm_cfft_radix4_instance_f32 S;	/* ARM CFFT module */
 
 
 /* USER CODE BEGIN PV */
@@ -212,7 +214,6 @@ int main(void)
     //MX_USB_HOST_Process();
     //HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);
     //HAL_Delay(100);
-
 	UserInterface();
 	ValueDisplay(g_ADCValue,0);
 
@@ -611,8 +612,8 @@ static void MX_TIM4_Init(void)
 	Timer4Handle.Instance = TIM4;
 	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	Timer4Handle.Init.ClockDivision = 0;
-	Timer4Handle.Init.Prescaler = 1000;
-	Timer4Handle.Init.Period = 800;
+	Timer4Handle.Init.Prescaler = 100; // should be 1 for normal operation
+	Timer4Handle.Init.Period = 4000; // 4Mhz/SAMPLING_RATE = 4000000/1000
 	__HAL_RCC_TIM4_CLK_ENABLE();
 	HAL_TIM_Base_Init(&Timer4Handle);
 	HAL_TIM_Base_Start_IT(&Timer4Handle);

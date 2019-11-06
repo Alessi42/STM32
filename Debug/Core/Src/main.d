@@ -43,7 +43,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_usb.h \
  ../USB_HOST/App/usb_host.h ../Core/Inc/display.h \
  ../Core/Inc/stm32l476g_discovery.h \
- ../Core/Inc/stm32l476g_discovery_glass_lcd.h ../Core/Inc/adc.h
+ ../Core/Inc/stm32l476g_discovery_glass_lcd.h ../Core/Inc/adc.h \
+ ../Drivers/CMSIS/Include/arm_math.h ../Drivers/CMSIS/Include/core_cm4.h
 
 ../Core/Inc/main.h:
 
@@ -140,3 +141,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/stm32l476g_discovery_glass_lcd.h:
 
 ../Core/Inc/adc.h:
+
+../Drivers/CMSIS/Include/arm_math.h:
+
+../Drivers/CMSIS/Include/core_cm4.h:
