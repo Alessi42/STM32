@@ -135,6 +135,25 @@ void TIM4_IRQHandler(void)
 	// clear the flag for resetting the timer
 	__HAL_TIM_CLEAR_FLAG(&Timer4Handle, TIM_FLAG_UPDATE);
 }
+
+//void timer() {
+//	// fires every second
+//	int changeCounter;
+//
+//	frequency = changeCounter / period;
+//
+//	// reset change counter
+//	changeCounter = 0;
+//}
+//
+//void pinInterrupt() {
+//	// fires every time the pin changes from high to low
+//	changeCounter++;
+//}
+
+
+
+
 /* USER CODE END 0 */
 
 /**
@@ -176,6 +195,7 @@ int main(void)
   MX_USB_HOST_Init();
   ADC_Init();
   MX_TIM4_Init();
+
   /* USER CODE BEGIN 2 */
 
   BSP_LCD_GLASS_Init();
