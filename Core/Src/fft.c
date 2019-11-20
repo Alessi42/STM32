@@ -1,145 +1,54 @@
 #include "fft.h"
 
-#define TEST_LENGTH_SAMPLES 2048
+arm_cfft_radix4_instance_f32 S; /* ARM CFFT module */
 
-//arm_cfft_instance_f32* fftTables[] = {
-////		&arm_cfft_sR_f32_len4096,
-//		&arm_cfft_sR_f32_len2048,
-//		&arm_cfft_sR_f32_len1024,
-//	&arm_cfft_sR_f32_len512,
-//	&arm_cfft_sR_f32_len256,
-//	&arm_cfft_sR_f32_len128,
-//	&arm_cfft_sR_f32_len64,
-//	&arm_cfft_sR_f32_len32
-//};
-//
-//
-////uint32_t fftSize = FFT_SIZE;
-//uint32_t ifftFlag = 0;
-//uint32_t doBitReverse = 1;
+float32_t Input[NUM_OF_FFT_SAMPLES];
+float32_t Output[FFT_SIZE];
 
-#define TEST_FREQUENCY	500.0f // HZ
+float32_t maxValue; /* Max FFT value is stored here */
+uint32_t maxIndex; /* Index in Output array where max value is */
 
-// fmax = SAMPLE_RATE/2 = 5kHz
-// 1024 complex samples
-// 512 frequency bins
-// = 5kHz/512 Hz/bin = 9.7Hz
-// test signal at bin 2500/9.7
-// = 256
+float nyquistFrequency= 0.5*SAMPLE_RATE;
+float hertzPerBin = 500.0/((float)FFT_SIZE/2);
 
-// for our radar:
+void initFFT() {
+	/* Initialize the CFFT/CIFFT module, intFlag = 0, doBitReverse = 1 */
+	arm_cfft_radix4_init_f32(&S, FFT_SIZE, 0, 1);
+}
 
-// detection range 0-1500Hz (0-100mph)
-// sample rate at least 3kHz
 
-// 3.67Hz resolution = 0.11m/s @ 10GHz = 0.4km/h = 0.25mph
-// so bins must be 3Hz
-// FFT must have at least 500 real bins
-// FFT size must be 500*2 = 1000 points, make it 1024
-// each bin will be 1500/512 Hz = 2.93Hz ~= 0.08m/s
-// so sample length must be 1024 points, at 3kHz gives a measurement time of ~300ms
+void createFFTBuffer(uint32_t *ADCBuffer) {
+	static uint16_t i;
 
-// 6.67Hz resolution = 0.20m/s @ 10GHz = 0.72km/h = 0.45mph
-// so bins must be 6Hz
-// FFT must have at least 250 real bins
-// FFT size must be 250*2 = 500 points, make it 512
-// each bin will be 1500/256 Hz = 5.86Hz ~= 0.1758m/s
-// so sample length must be 512 points, at 3kHz gives a measurement time of ~150ms
+	for(i=0;i<NUM_OF_FFT_SAMPLES;i+=2) {
+		// set real to be the buffer value centred about 0
+		Input[i] = ((float32_t)ADCBuffer[i])/4096.0; //  - 2048.0
 
-//void testFFT() {
-//	uint16_t input[TEST_LENGTH_SAMPLES];
-//	float32_t freq, average;
-//	float32_t output[TEST_LENGTH_SAMPLES];
-//	uint32_t index;
-//
-//	doFFT(input, freq, average, output, maxIndex, 1);
-//}
-//
-//// create some test data, a few sine waves and some noise
-//void createData(float32_t *buffer)
-//{
-//	static float32_t accumulator=0.0f;
-//	static float32_t frequency = TEST_FREQUENCY;
-//	uint16_t i;
-//
-//	float32_t radiansPerSample=(frequency*2.0*M_PI)/(float32_t)SAMPLE_RATE;
-//
-//	for(i=0;i<TEST_LENGTH_SAMPLES;i+=2)
-//	{
-//		buffer[i]=sin(accumulator);// RE
-////		buffer[i]+=sin(accumulator*2.0f)/2.0f;// RE
-////		buffer[i]+=sin(accumulator*0.5f)*0.8f;// RE
-////		buffer[i]+=i&0x100?0.25f:0.00f;// RE
-//
-//		buffer[i]+=((float32_t)rand()/(float32_t)RAND_MAX);//*5.0f;
-//
-//		buffer[i+1]=0.0f;// IM
-//
-//		accumulator+=radiansPerSample;
-//	}
-//
-//	frequency+=10.0f;
-//
-//	if(frequency>1200.0f)
-//		frequency=100.0f;
-//
-//}
-//
-//// convert the integer data buffer from the ADC into complex floating point buffer for FFT processing
-//void makeComplexBuffer(uint16_t *buffer, float32_t *output, uint16_t fftLength)
-//{
-//	uint16_t i;
-//
-//	for(i=0;i<fftLength*2;i+=2)
-//	{
-//		output[i]	= (float32_t)(buffer[i/2]&0x0fff)/4095.0f;
-//		output[i+1]	= 0.0f;
-//	}
-//}
-//
-//uint16_t getFftLength(uint16_t index)
-//{
-//	return fftTables[index]->fftLen;
-//}
-//
-//void doFFT(uint16_t *inputBuffer, float32_t *hertz, float32_t *average, float32_t output[],uint32_t *maxIndex, uint16_t fftLengthIndex)
-//{
-//	float32_t maxValue;
-//	uint16_t fftLength = getFftLength(fftLengthIndex);
-//	float32_t complexBuffer[FFT_MAX_SIZE*2];
-//
-//	// makeComplexBuffer(inputBuffer, complexBuffer, fftLength);
-//	createData(complexBuffer);
-//
-//  /* Process the data through the CFFT/CIFFT module */
-//	  arm_cfft_f32(fftTables[fftLengthIndex], complexBuffer, ifftFlag, doBitReverse);
-//
-//  /* Process the data through the Complex Magnitude Module for
-//  calculating the magnitude at each bin */
-//  arm_cmplx_mag_f32(complexBuffer, output, fftLength);
-//
-//  // ignore the DC value
-//  output[0]=0.0f;
-//
-//
-//  uint16_t n, top;
-//  top = 10;///(50*SAMPLE_RATE)/fftLength;
-//
-//
-//  // squash everything under 100Hz
-//  for(n=0;n<top;n++)
-//  {
-//	  output[n]=0.0f;
-//  }
-//
-//  /* Calculates maxValue and returns corresponding BIN value */
-//  arm_max_f32(output, fftLength/2, &maxValue, maxIndex);
-//
-//  // calculate frequency value of peak bin
-//  float32_t nyquistFrequency = SAMPLE_RATE/2;
-//  float32_t hertzPerBin = nyquistFrequency/((float)fftLength/2);
-//
-//  *hertz = hertzPerBin*(float32_t)*maxIndex;
-//
-//  arm_mean_f32(output, fftLength, average);
-//}
+		// set the imaginary part to 0
+		Input[i+1] = 0;
+	}
+	return;
+}
+
+void getMaxHertz(float *hertz) {
+	// calculate the fft of the buffer
+	/* Process the data through the CFFT/CIFFT module */
+	arm_cfft_radix4_f32(&S, &Input);
+	/* Process the data through the Complex Magnitude Module for calculating the magnitude at each bin */
+	arm_cmplx_mag_f32(&Input, &Output, FFT_SIZE);
+	// Remove the DC offset
+	Output[0] = 0;
+	/* Calculates maxValue and returns corresponding value */
+	arm_max_f32(&Output, FFT_SIZE / 2, &maxValue, &maxIndex);
+	// find the max frequency
+	*hertz = hertzPerBin * (float32_t)maxIndex;
+	return;
+}
+
+void transmitOutputBuffer() {
+	TransmitBuffer(&Output, FFT_SIZE, 'o');
+}
+
+void transmitInputBuffer() {
+	TransmitBuffer(&Input,NUM_OF_FFT_SAMPLES,'i');
+}
