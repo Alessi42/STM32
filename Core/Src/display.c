@@ -1,6 +1,6 @@
 #include "display.h"
 
-int menuChoice = -1;
+int menuChoice = 1;
 
 void LCDinit(void)
 {
@@ -17,12 +17,12 @@ void display(void) {
 
 void ValueDisplay(double value, int choice)
 {
-	char lcd[6];
+	static char lcd[6];
 
-	int digit1;
-	int digit2;
-	int digit3;
-	int digit4;
+	static int digit1;
+	static int digit2;
+	static int digit3;
+	static int digit4;
 
 
 	//too large number
