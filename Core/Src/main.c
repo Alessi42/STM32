@@ -19,7 +19,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include<stdio.h>
+#include <stdio.h>
 #include "main.h"
 #include "usb_host.h"
 #include "display.h"
@@ -65,25 +65,29 @@ UART_HandleTypeDef huart2;
 
 TIM_HandleTypeDef Timer4Handle;
 
-arm_cfft_radix4_instance_f32 S; /* ARM CFFT module */
-
 /* USER CODE BEGIN PV */
-#define SAMPLE_RATE 8000.0;
-#define NUM_OF_FFT_SAMPLES 128
-float32_t Input[NUM_OF_FFT_SAMPLES * 2];
-float32_t Output[NUM_OF_FFT_SAMPLES];
+//#define MAX_FREQ 50.0
+#define TRANSMIT_BUFFER_UART 1
+
+#define SAMPLE_RATE 1000.0 //(2.0 * MAX_FREQ)
+#define NUM_OF_FFT_SAMPLES 512
+#define FFT_SIZE (NUM_OF_FFT_SAMPLES / 2)
 
 // Current ADC value being read
 int g_ADCValue = 0;
 
 // which buffer we're currently writing to
 _Bool activeBuffer = 0;
+_Bool bufferReady = 0;
+_Bool bufferReading = 0;
 
 // Double buffers the length of the fourier transform length
 uint32_t ADCBuffer0[NUM_OF_FFT_SAMPLES];
 uint32_t ADCBuffer1[NUM_OF_FFT_SAMPLES];
 
 arm_cfft_radix4_instance_f32 S; /* ARM CFFT module */
+
+char snum[10*NUM_OF_FFT_SAMPLES];
 
 /* USER CODE END PV */
 
@@ -119,8 +123,14 @@ void addToDoubleBuffer(uint32_t value) {
 	bufferIndex++;
 	if (bufferIndex > NUM_OF_FFT_SAMPLES) {
 		// reset the index to write from the start and change to the next buffer
+
 		bufferIndex = 0;
-		activeBuffer = !activeBuffer;
+		if (!bufferReading) {
+			// currently not reading from buffer so rewrite other buffer
+			bufferReady = 1;
+			activeBuffer = !activeBuffer;
+		}
+
 	}
 }
 
@@ -136,6 +146,7 @@ void TIM4_IRQHandler(void) {
 	// clear the flag for resetting the timer
 	__HAL_TIM_CLEAR_FLAG(&Timer4Handle, TIM_FLAG_UPDATE);
 }
+
 
 //void timer() {
 //	// fires every second
@@ -181,14 +192,14 @@ int main(void) {
 
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
-	MX_I2C1_Init();
-	MX_I2C2_Init();
+	//MX_I2C1_Init();
+	//MX_I2C2_Init();
 	MX_LCD_Init();
-	MX_QUADSPI_Init();
-	MX_SAI1_Init();
-	MX_SPI2_Init();
+	//MX_QUADSPI_Init();
+	//MX_SAI1_Init();
+	//MX_SPI2_Init();
 	MX_USART2_UART_Init();
-	MX_USB_HOST_Init();
+	//MX_USB_HOST_Init();
 	ADC_Init();
 	MX_TIM4_Init();
 
@@ -200,133 +211,119 @@ int main(void) {
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
-	int i = 0;
-	float32_t maxValue; /* Max FFT value is stored here */
-	uint32_t maxIndex; /* Index in Output array where max value is */
+
+	float hertz = 0;
+
+	/* Initialize the CFFT/CIFFT module, intFlag = 0, doBitReverse = 1 */
+	initFFT();
+
+	long start_tick, duration;
 
 	while (1) {
-		// Write the value on serial
-		//TransmitUART();
-
 		/* USER CODE END WHILE */
-		//MX_USB_HOST_Process();
-		//HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);
-		//HAL_Delay(100);
-		createData(&Input);
+		start_tick = HAL_GetTick();
 
-//		for (i = 0; i < NUM_OF_FFT_SAMPLES * 2; i += 2) {
-//			/* Each 22us ~ 45kHz sample rate */
-//
-//			/* We assume that sampling and other stuff will take about 1us */
-//
-//			/* Real part, make offset by ADC / 2 */
-//			Input[(uint16_t) i] = (float32_t) (1000.0
-//					* sin(2 * 3.14 * 1000 * (i * 0.000022)));
-//			/* Imaginary part */
-//			Input[(uint16_t) (i + 1)] = 0;
-//		}
+		//createData(&Input);
 
-//		/* Initialize the CFFT/CIFFT module, intFlag = 0, doBitReverse = 1 */
-//		arm_cfft_radix4_init_f32(&S, NUM_OF_FFT_SAMPLES, 0, 1);
-//
-//		/* Process the data through the CFFT/CIFFT module */
-//		arm_cfft_radix4_f32(&S, Input);
-//
-//		/* Process the data through the Complex Magniture Module for calculating the magnitude at each bin */
-//		arm_cmplx_mag_f32(Input, Output, NUM_OF_FFT_SAMPLES);
-//
-//		/* Calculates maxValue and returns corresponding value */
-//		arm_max_f32(Output, NUM_OF_FFT_SAMPLES, &maxValue, &maxIndex);
 
-		//////////////////////////////////////////////////////////
-		arm_cfft_f32(&S, Input, 0, 1);
+		if (bufferReady) {
+			//hertz = getPeakFrequency();
+			// set the buffer ready flag to false
+			bufferReady = 0;
 
-		  /* Process the data through the Complex Magnitude Module for
-		  calculating the magnitude at each bin */
-		  arm_cmplx_mag_f32(Input, Output, NUM_OF_FFT_SAMPLES);
 
-//		  // ignore the DC value
-//		  Output[0]=0.0f;
-//
-//
-//		  uint16_t n, top;
-//		  top = 10;///(50*SAMPLE_RATE)/fftLength;
-//
-//
-//		  // squash everything under 100Hz
-//		  for(n=0;n<top;n++)
-//		  {
-//			  Output[n]=0.0f;
-//		  }
+			// create float buffer from adc buffer
+			// this will then be passed into the fft
+			bufferReading = 1;
+			if (!activeBuffer) {
+				createFFTBuffer(&ADCBuffer0);
+			} else {
+				createFFTBuffer(&ADCBuffer1);
+			}
+			bufferReading = 0;
 
-		  /* Calculates maxValue and returns corresponding BIN value */
-		  arm_max_f32(Output, NUM_OF_FFT_SAMPLES, &maxValue, &maxIndex);
 
-		  // calculate frequency value of peak bin
-		  float32_t nyquistFrequency = 4000.0;
-		  float32_t hertzPerBin = nyquistFrequency/((float)NUM_OF_FFT_SAMPLES);
+			// transmit the input buffer over UART
+			// must be done before it is passed through the fft
+			if (TRANSMIT_BUFFER_UART) {
+				transmitInputBuffer();
+			}
 
-		  float32_t hertz = hertzPerBin * (float32_t)maxIndex;
-		//////////////////////////////////////////////////////////
+			// calculate the fft of the buffer
 
+			/* Process the data through the CFFT/CIFFT module */
+			getMaxHertz(&hertz);
+
+			if (TRANSMIT_BUFFER_UART) {
+				transmitOutputBuffer();
+			}
+		}
 
 		UserInterface();
-		ValueDisplay(g_ADCValue, 0);
 
-		displayADC();
-		TransmitBuffer(&Output, NUM_OF_FFT_SAMPLES);
+		//duration = HAL_GetTick() - start_tick;
+		ValueDisplay(hertz, 1);
+
+		//displayADC();
+
+		//TransmitBuffer(&Output, FFT_SIZE, 'o');
 		/* USER CODE BEGIN 3 */
 	}
 	/* USER CODE END 3 */
 }
 
-// create some test data, a few sine waves and some noise
-void createData(float32_t *buffer)
-{
-	static float32_t accumulator=0.0f;
-	static float32_t frequency = 1000.0;
-	uint16_t i;
 
-	float32_t radiansPerSample=(frequency*2.0*M_PI)/(float32_t)SAMPLE_RATE;
-
-
-	for(i=0;i<NUM_OF_FFT_SAMPLES*2;i+=2)
-	{
-		buffer[i]=sin(accumulator);// RE
-//		buffer[i]+=sin(accumulator*2.0f)/2.0f;// RE
-//		buffer[i]+=sin(accumulator*0.5f)*0.8f;// RE
-//		buffer[i]+=i&0x100?0.25f:0.00f;// RE
-
-		//buffer[i]+=((float32_t)rand()/(float32_t)__RAND_MAX);//*5.0f;
-
-		buffer[i+1]=0.0f;// IM
-
-		accumulator+=radiansPerSample;
-	}
-}
 
 float ADCToVoltage(int ADCValue) {
 	return 3.3 * (float) ADCValue / 4096.0;
 }
 
-void TransmitBuffer(float32_t *buffer, int length) {
+
+void transmitBufferADC(uint32_t *buffer, int length, char type) {
 	static int write = 0;
 	int i = 0;
-	write++;
 
-	if (write > 10) {
-		for(i=0;i<length;i++) {
+	char *pos = snum;
 
-				float num = buffer[i];
-				char snum[20] = "    ,";
-				// convert 123 to string [buf]
-				sprintf(snum, "%f,\n\r",num);
+	memset(snum, 0, sizeof(snum));
 
-				HAL_UART_Transmit(&huart2, snum, sizeof(snum), HAL_MAX_DELAY);
-		write = 0;
+	pos += sprintf(pos, "%c\n\r", type);
+
+	for(i=0;i<length;i++) {
+			// convert 123 to string [buf]
+		pos += sprintf(pos, "%d,",buffer[i]);
+	}
+	write = 0;
+	pos += sprintf(pos, "\n");
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
+	HAL_UART_Transmit(&huart2, snum, sizeof(snum), HAL_MAX_DELAY); //HAL_MAX_DELAY
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+}
+
+void TransmitBuffer(float32_t *buffer, int length, char type) {
+	static int write = 0;
+	int increment = 1;
+	int i = 0;
+
+	char *pos = snum;
+
+	memset(snum, 0, sizeof(snum));
+
+	pos += sprintf(pos, "%c\n\r", type);
+
+	if (type =='i') {
+		increment = 2;
 	}
 
+	for(i=0;i<length;i+=increment) {
+			// convert 123 to string [buf]
+		pos += sprintf(pos, "%f,",buffer[i]);
 	}
+	write = 0;
+	pos += sprintf(pos, "\n");
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
+	HAL_UART_Transmit(&huart2, snum, sizeof(snum), HAL_MAX_DELAY); //HAL_MAX_DELAY
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
 }
 
 void TransmitUART() {
@@ -691,8 +688,8 @@ static void MX_TIM4_Init(void) {
 	Timer4Handle.Instance = TIM4;
 	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	Timer4Handle.Init.ClockDivision = 0;
-	Timer4Handle.Init.Prescaler = 100; // should be 1 for normal operation
-	Timer4Handle.Init.Period = 4000; // 4Mhz/SAMPLING_RATE = 4000000/1000
+	Timer4Handle.Init.Prescaler = 1; // should be 1 for normal operation
+	Timer4Handle.Init.Period = 4000 / 0.8018; // 4Mhz/SAMPLING_RATE = 4000000/1000
 	__HAL_RCC_TIM4_CLK_ENABLE();
 	HAL_TIM_Base_Init(&Timer4Handle);
 	HAL_TIM_Base_Start_IT(&Timer4Handle);
@@ -729,7 +726,7 @@ static void MX_USART2_UART_Init(void) {
 		Error_Handler();
 	}
 	/* USER CODE BEGIN USART2_Init 2 */
-
+	//__HAL_UART_ENABLE_IT(&huart2, UART_IT_TC);
 	/* USER CODE END USART2_Init 2 */
 
 }
