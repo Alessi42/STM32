@@ -235,7 +235,7 @@ int main(void) {
 			// create float buffer from adc buffer
 			// this will then be passed into the fft
 			bufferReading = 1;
-			if (!activeBuffer) {
+			if (activeBuffer) {
 				createFFTBuffer(&ADCBuffer0);
 			} else {
 				createFFTBuffer(&ADCBuffer1);
