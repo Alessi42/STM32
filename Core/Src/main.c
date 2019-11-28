@@ -290,7 +290,7 @@ void transmitBufferADC(uint32_t *buffer, int length, char type) {
 	pos += sprintf(pos, "%c\n\r", type);
 
 	for(i=0;i<length;i++) {
-			// convert 123 to string [buf]
+		// convert 123 to string [buf]
 		pos += sprintf(pos, "%d,",buffer[i]);
 	}
 	write = 0;
@@ -307,17 +307,19 @@ void TransmitBuffer(float32_t *buffer, int length, char type) {
 
 	char *pos = snum;
 
+	char formatString[] = "%f,";
+
 	memset(snum, 0, sizeof(snum));
 
 	pos += sprintf(pos, "%c\n\r", type);
 
 	if (type =='i') {
-		increment = 2;
+		formatString[1] = 'd';
 	}
 
 	for(i=0;i<length;i+=increment) {
 			// convert 123 to string [buf]
-		pos += sprintf(pos, "%f,",buffer[i]);
+		pos += sprintf(pos, formatString ,buffer[i]);
 	}
 	write = 0;
 	pos += sprintf(pos, "\n");

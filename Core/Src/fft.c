@@ -4,6 +4,7 @@ arm_cfft_radix4_instance_f32 S; /* ARM CFFT module */
 
 float32_t Input[NUM_OF_FFT_SAMPLES];
 float32_t Output[FFT_SIZE];
+uint32_t *ADCBuffer;
 
 float32_t maxValue; /* Max FFT value is stored here */
 uint32_t maxIndex; /* Index in Output array where max value is */
@@ -17,7 +18,8 @@ void initFFT() {
 }
 
 
-void createFFTBuffer(uint32_t *ADCBuffer) {
+void createFFTBuffer(uint32_t *_ADCBuffer) {
+	ADCBuffer = _ADCBuffer;
 	static uint16_t i;
 
 	for(i=0;i<NUM_OF_FFT_SAMPLES;i+=2) {
@@ -50,5 +52,5 @@ void transmitOutputBuffer() {
 }
 
 void transmitInputBuffer() {
-	TransmitBuffer(&Input,NUM_OF_FFT_SAMPLES,'i');
+	transmitBufferADC(ADCBuffer,NUM_OF_FFT_SAMPLES,'i');
 }

@@ -8,6 +8,8 @@ fig = figure(1)
 % Top two plots
 nexttile
 
+X = hankel(1:5, 5:7).';
+
 title('Plot of ADC buffer')
 p = plot(input);
 % ylim([0 4096])
@@ -22,7 +24,7 @@ P2 = abs(Y/L);
 P1 = P2(1:L/2+1);
 P1(2:end-1) = 2*P1(2:end-1);
 f = Fs*(0:(L/2))/L;
-    
+ylim([0 4096])
 %figure(2)
 nexttile
 
@@ -67,6 +69,7 @@ else
             
             dataString = s.readline();
             input = sscanf(dataString, '%g,', [1,inf]);
+            %spectrogram(input(X));
 %             disp(input);
             refreshdata
             drawnow
