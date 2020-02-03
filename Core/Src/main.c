@@ -67,7 +67,8 @@ TIM_HandleTypeDef Timer4Handle;
 
 /* USER CODE BEGIN PV */
 //#define MAX_FREQ 50.0
-#define TRANSMIT_BUFFER_UART 1
+#define TRANSMIT_BUFFER_UART 0
+#define TRANSMIT_BDC_VALUES 1
 
 #define SAMPLE_RATE 1000.0 //(2.0 * MAX_FREQ)
 #define NUM_OF_FFT_SAMPLES 512
@@ -257,6 +258,12 @@ int main(void) {
 			if (TRANSMIT_BUFFER_UART) {
 				transmitOutputBuffer();
 			}
+
+			if (TRANSMIT_BDC_VALUES) {
+				// send value to display board
+				TransmitValues(0xd,0xc);
+			}
+
 		}
 
 		UserInterface();
@@ -278,6 +285,14 @@ float ADCToVoltage(int ADCValue) {
 	return 3.3 * (float) ADCValue / 4096.0;
 }
 
+
+void TransmitValues(uint8_t MSDigit, uint8_t LSDigit) {
+	// send two 4-bit binary coded decimal numbers with the most
+	//significant BCD digit being transmitted in the most significant bits of the serial data.
+	uint8_t sendValue = (MSDigit << 4)|LSDigit;
+
+	HAL_UART_Transmit(&huart2, &sendValue, sizeof(sendValue), HAL_MAX_DELAY); //HAL_MAX_DELAY
+}
 
 void transmitBufferADC(uint32_t *buffer, int length, char type) {
 	static int write = 0;
@@ -715,7 +730,7 @@ static void MX_USART2_UART_Init(void) {
 
 	/* USER CODE END USART2_Init 1 */
 	huart2.Instance = USART2;
-	huart2.Init.BaudRate = 115200;
+	huart2.Init.BaudRate = 57600;
 	huart2.Init.WordLength = UART_WORDLENGTH_8B;
 	huart2.Init.StopBits = UART_STOPBITS_1;
 	huart2.Init.Parity = UART_PARITY_NONE;
