@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  000301fc  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000230d8  00000000  00000000  0003022c  2**0
+ 12 .debug_info   0002308e  00000000  00000000  0003022c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_abbrev 0000419e  00000000  00000000  00053304  2**0
+ 13 .debug_abbrev 0000418b  00000000  00000000  000532ba  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_aranges 00001a50  00000000  00000000  000574a8  2**3
+ 14 .debug_aranges 00001a30  00000000  00000000  00057448  2**3
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_ranges 000018f0  00000000  00000000  00058ef8  2**3
+ 15 .debug_ranges 000018d0  00000000  00000000  00058e78  2**3
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_macro  0002ee31  00000000  00000000  0005a7e8  2**0
+ 16 .debug_macro  0002ee31  00000000  00000000  0005a748  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_line   00016477  00000000  00000000  00089619  2**0
+ 17 .debug_line   000163cb  00000000  00000000  00089579  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .debug_str    00118f12  00000000  00000000  0009fa90  2**0
+ 18 .debug_str    00118ef2  00000000  00000000  0009f944  2**0
                   CONTENTS, READONLY, DEBUGGING
- 19 .comment      000000eb  00000000  00000000  001b89a2  2**0
+ 19 .comment      000000eb  00000000  00000000  001b8836  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000767c  00000000  00000000  001b8a90  2**2
+ 20 .debug_frame  0000760c  00000000  00000000  001b8924  2**2
                   CONTENTS, READONLY, DEBUGGING
- 21 .debug_loc    00003401  00000000  00000000  001c010c  2**0
+ 21 .debug_loc    00003401  00000000  00000000  001bff30  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -2401,17 +2401,17 @@ int main(void) {
 	//MX_I2C1_Init();
 	//MX_I2C2_Init();
 	MX_LCD_Init();
- 80016ee:	f000 f917 	bl	8001920 <MX_LCD_Init>
+ 80016ee:	f000 f94f 	bl	8001990 <MX_LCD_Init>
 	//MX_QUADSPI_Init();
 	//MX_SAI1_Init();
 	//MX_SPI2_Init();
-	MX_USART2_UART_Init();
- 80016f2:	f000 f985 	bl	8001a00 <MX_USART2_UART_Init>
+	MX_USART1_UART_Init();
+ 80016f2:	f000 f985 	bl	8001a00 <MX_USART1_UART_Init>
 	//MX_USB_HOST_Init();
 	ADC_Init();
  80016f6:	f7ff fbf1 	bl	8000edc <ADC_Init>
 	MX_TIM4_Init();
- 80016fa:	f000 f949 	bl	8001990 <MX_TIM4_Init>
+ 80016fa:	f000 f911 	bl	8001920 <MX_TIM4_Init>
 
 	/* USER CODE BEGIN 2 */
 
@@ -2549,7 +2549,7 @@ void TransmitValues(uint8_t MSDigit, uint8_t LSDigit) {
  80017a2:	b2db      	uxtb	r3, r3
  80017a4:	73fb      	strb	r3, [r7, #15]
 
-	HAL_UART_Transmit(&huart2, &sendValue, sizeof(sendValue), HAL_MAX_DELAY); //HAL_MAX_DELAY
+	HAL_UART_Transmit(&huart1, &sendValue, sizeof(sendValue), HAL_MAX_DELAY); //HAL_MAX_DELAY
  80017a6:	f107 010f 	add.w	r1, r7, #15
  80017aa:	f04f 33ff 	mov.w	r3, #4294967295
  80017ae:	2201      	movs	r2, #1
@@ -2561,7 +2561,7 @@ void TransmitValues(uint8_t MSDigit, uint8_t LSDigit) {
  80017ba:	46bd      	mov	sp, r7
  80017bc:	bd80      	pop	{r7, pc}
  80017be:	bf00      	nop
- 80017c0:	20002d94 	.word	0x20002d94
+ 80017c0:	200018d4 	.word	0x200018d4
 
 080017c4 <SystemClock_Config>:
 }
@@ -2770,218 +2770,218 @@ void SystemClock_Config(void) {
  8001918:	000268c2 	.word	0x000268c2
  800191c:	01110000 	.word	0x01110000
 
-08001920 <MX_LCD_Init>:
-/**
- * @brief LCD Initialization Function
- * @param None
- * @retval None
- */
-static void MX_LCD_Init(void) {
- 8001920:	b580      	push	{r7, lr}
- 8001922:	af00      	add	r7, sp, #0
-	/* USER CODE END LCD_Init 0 */
-
-	/* USER CODE BEGIN LCD_Init 1 */
-
-	/* USER CODE END LCD_Init 1 */
-	hlcd.Instance = LCD;
- 8001924:	4b18      	ldr	r3, [pc, #96]	; (8001988 <MX_LCD_Init+0x68>)
- 8001926:	4a19      	ldr	r2, [pc, #100]	; (800198c <MX_LCD_Init+0x6c>)
- 8001928:	601a      	str	r2, [r3, #0]
-	hlcd.Init.Prescaler = LCD_PRESCALER_1;
- 800192a:	4b17      	ldr	r3, [pc, #92]	; (8001988 <MX_LCD_Init+0x68>)
- 800192c:	2200      	movs	r2, #0
- 800192e:	605a      	str	r2, [r3, #4]
-	hlcd.Init.Divider = LCD_DIVIDER_16;
- 8001930:	4b15      	ldr	r3, [pc, #84]	; (8001988 <MX_LCD_Init+0x68>)
- 8001932:	2200      	movs	r2, #0
- 8001934:	609a      	str	r2, [r3, #8]
-	hlcd.Init.Duty = LCD_DUTY_1_4;
- 8001936:	4b14      	ldr	r3, [pc, #80]	; (8001988 <MX_LCD_Init+0x68>)
- 8001938:	220c      	movs	r2, #12
- 800193a:	60da      	str	r2, [r3, #12]
-	hlcd.Init.Bias = LCD_BIAS_1_4;
- 800193c:	4b12      	ldr	r3, [pc, #72]	; (8001988 <MX_LCD_Init+0x68>)
- 800193e:	2200      	movs	r2, #0
- 8001940:	611a      	str	r2, [r3, #16]
-	hlcd.Init.VoltageSource = LCD_VOLTAGESOURCE_INTERNAL;
- 8001942:	4b11      	ldr	r3, [pc, #68]	; (8001988 <MX_LCD_Init+0x68>)
- 8001944:	2200      	movs	r2, #0
- 8001946:	615a      	str	r2, [r3, #20]
-	hlcd.Init.Contrast = LCD_CONTRASTLEVEL_0;
- 8001948:	4b0f      	ldr	r3, [pc, #60]	; (8001988 <MX_LCD_Init+0x68>)
- 800194a:	2200      	movs	r2, #0
- 800194c:	619a      	str	r2, [r3, #24]
-	hlcd.Init.DeadTime = LCD_DEADTIME_0;
- 800194e:	4b0e      	ldr	r3, [pc, #56]	; (8001988 <MX_LCD_Init+0x68>)
- 8001950:	2200      	movs	r2, #0
- 8001952:	61da      	str	r2, [r3, #28]
-	hlcd.Init.PulseOnDuration = LCD_PULSEONDURATION_0;
- 8001954:	4b0c      	ldr	r3, [pc, #48]	; (8001988 <MX_LCD_Init+0x68>)
- 8001956:	2200      	movs	r2, #0
- 8001958:	621a      	str	r2, [r3, #32]
-	hlcd.Init.MuxSegment = LCD_MUXSEGMENT_DISABLE;
- 800195a:	4b0b      	ldr	r3, [pc, #44]	; (8001988 <MX_LCD_Init+0x68>)
- 800195c:	2200      	movs	r2, #0
- 800195e:	631a      	str	r2, [r3, #48]	; 0x30
-	hlcd.Init.BlinkMode = LCD_BLINKMODE_OFF;
- 8001960:	4b09      	ldr	r3, [pc, #36]	; (8001988 <MX_LCD_Init+0x68>)
- 8001962:	2200      	movs	r2, #0
- 8001964:	629a      	str	r2, [r3, #40]	; 0x28
-	hlcd.Init.BlinkFrequency = LCD_BLINKFREQUENCY_DIV8;
- 8001966:	4b08      	ldr	r3, [pc, #32]	; (8001988 <MX_LCD_Init+0x68>)
- 8001968:	2200      	movs	r2, #0
- 800196a:	62da      	str	r2, [r3, #44]	; 0x2c
-	hlcd.Init.HighDrive = LCD_HIGHDRIVE_DISABLE;
- 800196c:	4b06      	ldr	r3, [pc, #24]	; (8001988 <MX_LCD_Init+0x68>)
- 800196e:	2200      	movs	r2, #0
- 8001970:	625a      	str	r2, [r3, #36]	; 0x24
-	if (HAL_LCD_Init(&hlcd) != HAL_OK) {
- 8001972:	4805      	ldr	r0, [pc, #20]	; (8001988 <MX_LCD_Init+0x68>)
- 8001974:	f004 fc08 	bl	8006188 <HAL_LCD_Init>
- 8001978:	4603      	mov	r3, r0
- 800197a:	2b00      	cmp	r3, #0
- 800197c:	d001      	beq.n	8001982 <MX_LCD_Init+0x62>
-		Error_Handler();
- 800197e:	f000 f9b9 	bl	8001cf4 <Error_Handler>
-	}
-	/* USER CODE BEGIN LCD_Init 2 */
-
-	/* USER CODE END LCD_Init 2 */
-
-}
- 8001982:	bf00      	nop
- 8001984:	bd80      	pop	{r7, pc}
- 8001986:	bf00      	nop
- 8001988:	200018d4 	.word	0x200018d4
- 800198c:	40002400 	.word	0x40002400
-
-08001990 <MX_TIM4_Init>:
+08001920 <MX_TIM4_Init>:
 /**
  * @brief TIM4 Initialization Function
  * @param None
  * @retval None
  */
 static void MX_TIM4_Init(void) {
- 8001990:	b580      	push	{r7, lr}
- 8001992:	b082      	sub	sp, #8
- 8001994:	af00      	add	r7, sp, #0
+ 8001920:	b580      	push	{r7, lr}
+ 8001922:	b082      	sub	sp, #8
+ 8001924:	af00      	add	r7, sp, #0
 	Timer4Handle.Instance = TIM4;
- 8001996:	4b17      	ldr	r3, [pc, #92]	; (80019f4 <MX_TIM4_Init+0x64>)
- 8001998:	4a17      	ldr	r2, [pc, #92]	; (80019f8 <MX_TIM4_Init+0x68>)
- 800199a:	601a      	str	r2, [r3, #0]
+ 8001926:	4b17      	ldr	r3, [pc, #92]	; (8001984 <MX_TIM4_Init+0x64>)
+ 8001928:	4a17      	ldr	r2, [pc, #92]	; (8001988 <MX_TIM4_Init+0x68>)
+ 800192a:	601a      	str	r2, [r3, #0]
 	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
- 800199c:	4b15      	ldr	r3, [pc, #84]	; (80019f4 <MX_TIM4_Init+0x64>)
- 800199e:	2200      	movs	r2, #0
- 80019a0:	609a      	str	r2, [r3, #8]
+ 800192c:	4b15      	ldr	r3, [pc, #84]	; (8001984 <MX_TIM4_Init+0x64>)
+ 800192e:	2200      	movs	r2, #0
+ 8001930:	609a      	str	r2, [r3, #8]
 	Timer4Handle.Init.ClockDivision = 0;
- 80019a2:	4b14      	ldr	r3, [pc, #80]	; (80019f4 <MX_TIM4_Init+0x64>)
- 80019a4:	2200      	movs	r2, #0
- 80019a6:	611a      	str	r2, [r3, #16]
+ 8001932:	4b14      	ldr	r3, [pc, #80]	; (8001984 <MX_TIM4_Init+0x64>)
+ 8001934:	2200      	movs	r2, #0
+ 8001936:	611a      	str	r2, [r3, #16]
 	Timer4Handle.Init.Prescaler = 1; // should be 1 for normal operation
- 80019a8:	4b12      	ldr	r3, [pc, #72]	; (80019f4 <MX_TIM4_Init+0x64>)
- 80019aa:	2201      	movs	r2, #1
- 80019ac:	605a      	str	r2, [r3, #4]
+ 8001938:	4b12      	ldr	r3, [pc, #72]	; (8001984 <MX_TIM4_Init+0x64>)
+ 800193a:	2201      	movs	r2, #1
+ 800193c:	605a      	str	r2, [r3, #4]
 	Timer4Handle.Init.Period = 4000 / 0.8018; // 4Mhz/SAMPLING_RATE = 4000000/1000
- 80019ae:	4b11      	ldr	r3, [pc, #68]	; (80019f4 <MX_TIM4_Init+0x64>)
- 80019b0:	f241 327c 	movw	r2, #4988	; 0x137c
- 80019b4:	60da      	str	r2, [r3, #12]
+ 800193e:	4b11      	ldr	r3, [pc, #68]	; (8001984 <MX_TIM4_Init+0x64>)
+ 8001940:	f241 327c 	movw	r2, #4988	; 0x137c
+ 8001944:	60da      	str	r2, [r3, #12]
 	__HAL_RCC_TIM4_CLK_ENABLE();
- 80019b6:	4b11      	ldr	r3, [pc, #68]	; (80019fc <MX_TIM4_Init+0x6c>)
- 80019b8:	6d9b      	ldr	r3, [r3, #88]	; 0x58
- 80019ba:	4a10      	ldr	r2, [pc, #64]	; (80019fc <MX_TIM4_Init+0x6c>)
- 80019bc:	f043 0304 	orr.w	r3, r3, #4
- 80019c0:	6593      	str	r3, [r2, #88]	; 0x58
- 80019c2:	4b0e      	ldr	r3, [pc, #56]	; (80019fc <MX_TIM4_Init+0x6c>)
- 80019c4:	6d9b      	ldr	r3, [r3, #88]	; 0x58
- 80019c6:	f003 0304 	and.w	r3, r3, #4
- 80019ca:	607b      	str	r3, [r7, #4]
- 80019cc:	687b      	ldr	r3, [r7, #4]
+ 8001946:	4b11      	ldr	r3, [pc, #68]	; (800198c <MX_TIM4_Init+0x6c>)
+ 8001948:	6d9b      	ldr	r3, [r3, #88]	; 0x58
+ 800194a:	4a10      	ldr	r2, [pc, #64]	; (800198c <MX_TIM4_Init+0x6c>)
+ 800194c:	f043 0304 	orr.w	r3, r3, #4
+ 8001950:	6593      	str	r3, [r2, #88]	; 0x58
+ 8001952:	4b0e      	ldr	r3, [pc, #56]	; (800198c <MX_TIM4_Init+0x6c>)
+ 8001954:	6d9b      	ldr	r3, [r3, #88]	; 0x58
+ 8001956:	f003 0304 	and.w	r3, r3, #4
+ 800195a:	607b      	str	r3, [r7, #4]
+ 800195c:	687b      	ldr	r3, [r7, #4]
 	HAL_TIM_Base_Init(&Timer4Handle);
- 80019ce:	4809      	ldr	r0, [pc, #36]	; (80019f4 <MX_TIM4_Init+0x64>)
- 80019d0:	f006 f88e 	bl	8007af0 <HAL_TIM_Base_Init>
+ 800195e:	4809      	ldr	r0, [pc, #36]	; (8001984 <MX_TIM4_Init+0x64>)
+ 8001960:	f006 f8c6 	bl	8007af0 <HAL_TIM_Base_Init>
 	HAL_TIM_Base_Start_IT(&Timer4Handle);
- 80019d4:	4807      	ldr	r0, [pc, #28]	; (80019f4 <MX_TIM4_Init+0x64>)
- 80019d6:	f006 f8b7 	bl	8007b48 <HAL_TIM_Base_Start_IT>
+ 8001964:	4807      	ldr	r0, [pc, #28]	; (8001984 <MX_TIM4_Init+0x64>)
+ 8001966:	f006 f8ef 	bl	8007b48 <HAL_TIM_Base_Start_IT>
 	HAL_NVIC_SetPriority(TIM4_IRQn, 7, 0); // middle priority
- 80019da:	2200      	movs	r2, #0
- 80019dc:	2107      	movs	r1, #7
- 80019de:	201e      	movs	r0, #30
- 80019e0:	f003 f85f 	bl	8004aa2 <HAL_NVIC_SetPriority>
+ 800196a:	2200      	movs	r2, #0
+ 800196c:	2107      	movs	r1, #7
+ 800196e:	201e      	movs	r0, #30
+ 8001970:	f003 f897 	bl	8004aa2 <HAL_NVIC_SetPriority>
 	HAL_NVIC_EnableIRQ(TIM4_IRQn);
- 80019e4:	201e      	movs	r0, #30
- 80019e6:	f003 f878 	bl	8004ada <HAL_NVIC_EnableIRQ>
+ 8001974:	201e      	movs	r0, #30
+ 8001976:	f003 f8b0 	bl	8004ada <HAL_NVIC_EnableIRQ>
 
 }
- 80019ea:	bf00      	nop
- 80019ec:	3708      	adds	r7, #8
- 80019ee:	46bd      	mov	sp, r7
- 80019f0:	bd80      	pop	{r7, pc}
- 80019f2:	bf00      	nop
- 80019f4:	20001894 	.word	0x20001894
- 80019f8:	40000800 	.word	0x40000800
- 80019fc:	40021000 	.word	0x40021000
+ 800197a:	bf00      	nop
+ 800197c:	3708      	adds	r7, #8
+ 800197e:	46bd      	mov	sp, r7
+ 8001980:	bd80      	pop	{r7, pc}
+ 8001982:	bf00      	nop
+ 8001984:	20001894 	.word	0x20001894
+ 8001988:	40000800 	.word	0x40000800
+ 800198c:	40021000 	.word	0x40021000
 
-08001a00 <MX_USART2_UART_Init>:
+08001990 <MX_LCD_Init>:
+/**
+ * @brief LCD Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_LCD_Init(void) {
+ 8001990:	b580      	push	{r7, lr}
+ 8001992:	af00      	add	r7, sp, #0
+	/* USER CODE END LCD_Init 0 */
+
+	/* USER CODE BEGIN LCD_Init 1 */
+
+	/* USER CODE END LCD_Init 1 */
+	hlcd.Instance = LCD;
+ 8001994:	4b18      	ldr	r3, [pc, #96]	; (80019f8 <MX_LCD_Init+0x68>)
+ 8001996:	4a19      	ldr	r2, [pc, #100]	; (80019fc <MX_LCD_Init+0x6c>)
+ 8001998:	601a      	str	r2, [r3, #0]
+	hlcd.Init.Prescaler = LCD_PRESCALER_1;
+ 800199a:	4b17      	ldr	r3, [pc, #92]	; (80019f8 <MX_LCD_Init+0x68>)
+ 800199c:	2200      	movs	r2, #0
+ 800199e:	605a      	str	r2, [r3, #4]
+	hlcd.Init.Divider = LCD_DIVIDER_16;
+ 80019a0:	4b15      	ldr	r3, [pc, #84]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019a2:	2200      	movs	r2, #0
+ 80019a4:	609a      	str	r2, [r3, #8]
+	hlcd.Init.Duty = LCD_DUTY_1_4;
+ 80019a6:	4b14      	ldr	r3, [pc, #80]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019a8:	220c      	movs	r2, #12
+ 80019aa:	60da      	str	r2, [r3, #12]
+	hlcd.Init.Bias = LCD_BIAS_1_4;
+ 80019ac:	4b12      	ldr	r3, [pc, #72]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019ae:	2200      	movs	r2, #0
+ 80019b0:	611a      	str	r2, [r3, #16]
+	hlcd.Init.VoltageSource = LCD_VOLTAGESOURCE_INTERNAL;
+ 80019b2:	4b11      	ldr	r3, [pc, #68]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019b4:	2200      	movs	r2, #0
+ 80019b6:	615a      	str	r2, [r3, #20]
+	hlcd.Init.Contrast = LCD_CONTRASTLEVEL_0;
+ 80019b8:	4b0f      	ldr	r3, [pc, #60]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019ba:	2200      	movs	r2, #0
+ 80019bc:	619a      	str	r2, [r3, #24]
+	hlcd.Init.DeadTime = LCD_DEADTIME_0;
+ 80019be:	4b0e      	ldr	r3, [pc, #56]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019c0:	2200      	movs	r2, #0
+ 80019c2:	61da      	str	r2, [r3, #28]
+	hlcd.Init.PulseOnDuration = LCD_PULSEONDURATION_0;
+ 80019c4:	4b0c      	ldr	r3, [pc, #48]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019c6:	2200      	movs	r2, #0
+ 80019c8:	621a      	str	r2, [r3, #32]
+	hlcd.Init.MuxSegment = LCD_MUXSEGMENT_DISABLE;
+ 80019ca:	4b0b      	ldr	r3, [pc, #44]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019cc:	2200      	movs	r2, #0
+ 80019ce:	631a      	str	r2, [r3, #48]	; 0x30
+	hlcd.Init.BlinkMode = LCD_BLINKMODE_OFF;
+ 80019d0:	4b09      	ldr	r3, [pc, #36]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019d2:	2200      	movs	r2, #0
+ 80019d4:	629a      	str	r2, [r3, #40]	; 0x28
+	hlcd.Init.BlinkFrequency = LCD_BLINKFREQUENCY_DIV8;
+ 80019d6:	4b08      	ldr	r3, [pc, #32]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019d8:	2200      	movs	r2, #0
+ 80019da:	62da      	str	r2, [r3, #44]	; 0x2c
+	hlcd.Init.HighDrive = LCD_HIGHDRIVE_DISABLE;
+ 80019dc:	4b06      	ldr	r3, [pc, #24]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019de:	2200      	movs	r2, #0
+ 80019e0:	625a      	str	r2, [r3, #36]	; 0x24
+	if (HAL_LCD_Init(&hlcd) != HAL_OK) {
+ 80019e2:	4805      	ldr	r0, [pc, #20]	; (80019f8 <MX_LCD_Init+0x68>)
+ 80019e4:	f004 fbd0 	bl	8006188 <HAL_LCD_Init>
+ 80019e8:	4603      	mov	r3, r0
+ 80019ea:	2b00      	cmp	r3, #0
+ 80019ec:	d001      	beq.n	80019f2 <MX_LCD_Init+0x62>
+		Error_Handler();
+ 80019ee:	f000 f981 	bl	8001cf4 <Error_Handler>
+	}
+	/* USER CODE BEGIN LCD_Init 2 */
+
+	/* USER CODE END LCD_Init 2 */
+
+}
+ 80019f2:	bf00      	nop
+ 80019f4:	bd80      	pop	{r7, pc}
+ 80019f6:	bf00      	nop
+ 80019f8:	20001954 	.word	0x20001954
+ 80019fc:	40002400 	.word	0x40002400
+
+08001a00 <MX_USART1_UART_Init>:
 /**
  * @brief USART2 Initialization Function
  * @param None
  * @retval None
  */
-static void MX_USART2_UART_Init(void) {
+static void MX_USART1_UART_Init(void) {
  8001a00:	b580      	push	{r7, lr}
  8001a02:	af00      	add	r7, sp, #0
-	/* USER CODE END USART2_Init 0 */
+	/* USER CODE END USART1_Init 0 */
 
-	/* USER CODE BEGIN USART2_Init 1 */
+	/* USER CODE BEGIN USART1_Init 1 */
 
-	/* USER CODE END USART2_Init 1 */
-	huart2.Instance = USART2;
- 8001a04:	4b14      	ldr	r3, [pc, #80]	; (8001a58 <MX_USART2_UART_Init+0x58>)
- 8001a06:	4a15      	ldr	r2, [pc, #84]	; (8001a5c <MX_USART2_UART_Init+0x5c>)
+	/* USER CODE END USART1_Init 1 */
+	huart1.Instance = USART1;
+ 8001a04:	4b14      	ldr	r3, [pc, #80]	; (8001a58 <MX_USART1_UART_Init+0x58>)
+ 8001a06:	4a15      	ldr	r2, [pc, #84]	; (8001a5c <MX_USART1_UART_Init+0x5c>)
  8001a08:	601a      	str	r2, [r3, #0]
-	huart2.Init.BaudRate = 57600;
- 8001a0a:	4b13      	ldr	r3, [pc, #76]	; (8001a58 <MX_USART2_UART_Init+0x58>)
+	huart1.Init.BaudRate = 57600;
+ 8001a0a:	4b13      	ldr	r3, [pc, #76]	; (8001a58 <MX_USART1_UART_Init+0x58>)
  8001a0c:	f44f 4261 	mov.w	r2, #57600	; 0xe100
  8001a10:	605a      	str	r2, [r3, #4]
-	huart2.Init.WordLength = UART_WORDLENGTH_8B;
- 8001a12:	4b11      	ldr	r3, [pc, #68]	; (8001a58 <MX_USART2_UART_Init+0x58>)
+	huart1.Init.WordLength = UART_WORDLENGTH_8B;
+ 8001a12:	4b11      	ldr	r3, [pc, #68]	; (8001a58 <MX_USART1_UART_Init+0x58>)
  8001a14:	2200      	movs	r2, #0
  8001a16:	609a      	str	r2, [r3, #8]
-	huart2.Init.StopBits = UART_STOPBITS_1;
- 8001a18:	4b0f      	ldr	r3, [pc, #60]	; (8001a58 <MX_USART2_UART_Init+0x58>)
+	huart1.Init.StopBits = UART_STOPBITS_1;
+ 8001a18:	4b0f      	ldr	r3, [pc, #60]	; (8001a58 <MX_USART1_UART_Init+0x58>)
  8001a1a:	2200      	movs	r2, #0
  8001a1c:	60da      	str	r2, [r3, #12]
-	huart2.Init.Parity = UART_PARITY_NONE;
- 8001a1e:	4b0e      	ldr	r3, [pc, #56]	; (8001a58 <MX_USART2_UART_Init+0x58>)
+	huart1.Init.Parity = UART_PARITY_NONE;
+ 8001a1e:	4b0e      	ldr	r3, [pc, #56]	; (8001a58 <MX_USART1_UART_Init+0x58>)
  8001a20:	2200      	movs	r2, #0
  8001a22:	611a      	str	r2, [r3, #16]
-	huart2.Init.Mode = UART_MODE_TX_RX;
- 8001a24:	4b0c      	ldr	r3, [pc, #48]	; (8001a58 <MX_USART2_UART_Init+0x58>)
+	huart1.Init.Mode = UART_MODE_TX_RX;
+ 8001a24:	4b0c      	ldr	r3, [pc, #48]	; (8001a58 <MX_USART1_UART_Init+0x58>)
  8001a26:	220c      	movs	r2, #12
  8001a28:	615a      	str	r2, [r3, #20]
-	huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
- 8001a2a:	4b0b      	ldr	r3, [pc, #44]	; (8001a58 <MX_USART2_UART_Init+0x58>)
+	huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+ 8001a2a:	4b0b      	ldr	r3, [pc, #44]	; (8001a58 <MX_USART1_UART_Init+0x58>)
  8001a2c:	2200      	movs	r2, #0
  8001a2e:	619a      	str	r2, [r3, #24]
-	huart2.Init.OverSampling = UART_OVERSAMPLING_16;
- 8001a30:	4b09      	ldr	r3, [pc, #36]	; (8001a58 <MX_USART2_UART_Init+0x58>)
+	huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+ 8001a30:	4b09      	ldr	r3, [pc, #36]	; (8001a58 <MX_USART1_UART_Init+0x58>)
  8001a32:	2200      	movs	r2, #0
  8001a34:	61da      	str	r2, [r3, #28]
-	huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
- 8001a36:	4b08      	ldr	r3, [pc, #32]	; (8001a58 <MX_USART2_UART_Init+0x58>)
+	huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+ 8001a36:	4b08      	ldr	r3, [pc, #32]	; (8001a58 <MX_USART1_UART_Init+0x58>)
  8001a38:	2200      	movs	r2, #0
  8001a3a:	621a      	str	r2, [r3, #32]
-	huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
- 8001a3c:	4b06      	ldr	r3, [pc, #24]	; (8001a58 <MX_USART2_UART_Init+0x58>)
+	huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+ 8001a3c:	4b06      	ldr	r3, [pc, #24]	; (8001a58 <MX_USART1_UART_Init+0x58>)
  8001a3e:	2200      	movs	r2, #0
  8001a40:	625a      	str	r2, [r3, #36]	; 0x24
-	if (HAL_UART_Init(&huart2) != HAL_OK) {
- 8001a42:	4805      	ldr	r0, [pc, #20]	; (8001a58 <MX_USART2_UART_Init+0x58>)
+	if (HAL_UART_Init(&huart1) != HAL_OK) {
+ 8001a42:	4805      	ldr	r0, [pc, #20]	; (8001a58 <MX_USART1_UART_Init+0x58>)
  8001a44:	f006 f944 	bl	8007cd0 <HAL_UART_Init>
  8001a48:	4603      	mov	r3, r0
  8001a4a:	2b00      	cmp	r3, #0
- 8001a4c:	d001      	beq.n	8001a52 <MX_USART2_UART_Init+0x52>
+ 8001a4c:	d001      	beq.n	8001a52 <MX_USART1_UART_Init+0x52>
 		Error_Handler();
  8001a4e:	f000 f951 	bl	8001cf4 <Error_Handler>
 	}
@@ -2993,8 +2993,8 @@ static void MX_USART2_UART_Init(void) {
  8001a52:	bf00      	nop
  8001a54:	bd80      	pop	{r7, pc}
  8001a56:	bf00      	nop
- 8001a58:	20002d94 	.word	0x20002d94
- 8001a5c:	40004400 	.word	0x40004400
+ 8001a58:	200018d4 	.word	0x200018d4
+ 8001a5c:	40013800 	.word	0x40013800
 
 08001a60 <MX_GPIO_Init>:
 /**

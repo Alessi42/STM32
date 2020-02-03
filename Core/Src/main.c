@@ -61,7 +61,7 @@ SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim4;
 
-UART_HandleTypeDef huart2;
+UART_HandleTypeDef huart1;
 
 TIM_HandleTypeDef Timer4Handle;
 
@@ -95,13 +95,9 @@ char snum[10*NUM_OF_FFT_SAMPLES];
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_I2C1_Init(void);
-static void MX_I2C2_Init(void);
 static void MX_LCD_Init(void);
 static void MX_QUADSPI_Init(void);
-static void MX_SAI1_Init(void);
-static void MX_SPI2_Init(void);
-static void MX_USART2_UART_Init(void);
+static void MX_USART1_UART_Init(void);
 //static void MX_ADC1_Init(void);
 static void MX_TIM4_Init(void);
 void MX_USB_HOST_Process(void);
@@ -199,7 +195,7 @@ int main(void) {
 	//MX_QUADSPI_Init();
 	//MX_SAI1_Init();
 	//MX_SPI2_Init();
-	MX_USART2_UART_Init();
+	MX_USART1_UART_Init();
 	//MX_USB_HOST_Init();
 	ADC_Init();
 	MX_TIM4_Init();
@@ -291,7 +287,7 @@ void TransmitValues(uint8_t MSDigit, uint8_t LSDigit) {
 	//significant BCD digit being transmitted in the most significant bits of the serial data.
 	uint8_t sendValue = (MSDigit << 4)|LSDigit;
 
-	HAL_UART_Transmit(&huart2, &sendValue, sizeof(sendValue), HAL_MAX_DELAY); //HAL_MAX_DELAY
+	HAL_UART_Transmit(&huart1, &sendValue, sizeof(sendValue), HAL_MAX_DELAY); //HAL_MAX_DELAY
 }
 
 void transmitBufferADC(uint32_t *buffer, int length, char type) {
@@ -311,7 +307,7 @@ void transmitBufferADC(uint32_t *buffer, int length, char type) {
 	write = 0;
 	pos += sprintf(pos, "\n");
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
-	HAL_UART_Transmit(&huart2, snum, sizeof(snum), HAL_MAX_DELAY); //HAL_MAX_DELAY
+	HAL_UART_Transmit(&huart1, snum, sizeof(snum), HAL_MAX_DELAY); //HAL_MAX_DELAY
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
 }
 
@@ -339,7 +335,7 @@ void TransmitBuffer(float32_t *buffer, int length, char type) {
 	write = 0;
 	pos += sprintf(pos, "\n");
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
-	HAL_UART_Transmit(&huart2, snum, sizeof(snum), HAL_MAX_DELAY); //HAL_MAX_DELAY
+	HAL_UART_Transmit(&huart1, snum, sizeof(snum), HAL_MAX_DELAY); //HAL_MAX_DELAY
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
 }
 
@@ -355,7 +351,7 @@ void TransmitUART() {
 	// print comma separated
 	snum[4] = '\n';
 
-	HAL_UART_Transmit(&huart2, snum, sizeof(snum), HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart1, snum, sizeof(snum), HAL_MAX_DELAY);
 }
 /**
  * @brief System Clock Configuration
@@ -434,88 +430,21 @@ void SystemClock_Config(void) {
 }
 
 /**
- * @brief I2C1 Initialization Function
+ * @brief TIM4 Initialization Function
  * @param None
  * @retval None
  */
-static void MX_I2C1_Init(void) {
-
-	/* USER CODE BEGIN I2C1_Init 0 */
-
-	/* USER CODE END I2C1_Init 0 */
-
-	/* USER CODE BEGIN I2C1_Init 1 */
-
-	/* USER CODE END I2C1_Init 1 */
-	hi2c1.Instance = I2C1;
-	hi2c1.Init.Timing = 0x00404C74;
-	hi2c1.Init.OwnAddress1 = 0;
-	hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-	hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-	hi2c1.Init.OwnAddress2 = 0;
-	hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-	hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-	hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-	if (HAL_I2C_Init(&hi2c1) != HAL_OK) {
-		Error_Handler();
-	}
-	/** Configure Analogue filter
-	 */
-	if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-	/** Configure Digital filter
-	 */
-	if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN I2C1_Init 2 */
-
-	/* USER CODE END I2C1_Init 2 */
-
-}
-
-/**
- * @brief I2C2 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_I2C2_Init(void) {
-
-	/* USER CODE BEGIN I2C2_Init 0 */
-
-	/* USER CODE END I2C2_Init 0 */
-
-	/* USER CODE BEGIN I2C2_Init 1 */
-
-	/* USER CODE END I2C2_Init 1 */
-	hi2c2.Instance = I2C2;
-	hi2c2.Init.Timing = 0x00404C74;
-	hi2c2.Init.OwnAddress1 = 0;
-	hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-	hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-	hi2c2.Init.OwnAddress2 = 0;
-	hi2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-	hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-	hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-	if (HAL_I2C_Init(&hi2c2) != HAL_OK) {
-		Error_Handler();
-	}
-	/** Configure Analogue filter
-	 */
-	if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-	/** Configure Digital filter
-	 */
-	if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN I2C2_Init 2 */
-
-	/* USER CODE END I2C2_Init 2 */
+static void MX_TIM4_Init(void) {
+	Timer4Handle.Instance = TIM4;
+	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
+	Timer4Handle.Init.ClockDivision = 0;
+	Timer4Handle.Init.Prescaler = 1; // should be 1 for normal operation
+	Timer4Handle.Init.Period = 4000 / 0.8018; // 4Mhz/SAMPLING_RATE = 4000000/1000
+	__HAL_RCC_TIM4_CLK_ENABLE();
+	HAL_TIM_Base_Init(&Timer4Handle);
+	HAL_TIM_Base_Start_IT(&Timer4Handle);
+	HAL_NVIC_SetPriority(TIM4_IRQn, 7, 0); // middle priority
+	HAL_NVIC_EnableIRQ(TIM4_IRQn);
 
 }
 
@@ -586,160 +515,33 @@ static void MX_QUADSPI_Init(void) {
 
 }
 
-/**
- * @brief SAI1 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_SAI1_Init(void) {
 
-	/* USER CODE BEGIN SAI1_Init 0 */
-
-	/* USER CODE END SAI1_Init 0 */
-
-	/* USER CODE BEGIN SAI1_Init 1 */
-
-	/* USER CODE END SAI1_Init 1 */
-	hsai_BlockA1.Instance = SAI1_Block_A;
-	hsai_BlockA1.Init.Protocol = SAI_FREE_PROTOCOL;
-	hsai_BlockA1.Init.AudioMode = SAI_MODEMASTER_TX;
-	hsai_BlockA1.Init.DataSize = SAI_DATASIZE_8;
-	hsai_BlockA1.Init.FirstBit = SAI_FIRSTBIT_MSB;
-	hsai_BlockA1.Init.ClockStrobing = SAI_CLOCKSTROBING_FALLINGEDGE;
-	hsai_BlockA1.Init.Synchro = SAI_ASYNCHRONOUS;
-	hsai_BlockA1.Init.OutputDrive = SAI_OUTPUTDRIVE_DISABLE;
-	hsai_BlockA1.Init.NoDivider = SAI_MASTERDIVIDER_ENABLE;
-	hsai_BlockA1.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_EMPTY;
-	hsai_BlockA1.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_192K;
-	hsai_BlockA1.Init.SynchroExt = SAI_SYNCEXT_DISABLE;
-	hsai_BlockA1.Init.MonoStereoMode = SAI_STEREOMODE;
-	hsai_BlockA1.Init.CompandingMode = SAI_NOCOMPANDING;
-	hsai_BlockA1.Init.TriState = SAI_OUTPUT_NOTRELEASED;
-	hsai_BlockA1.FrameInit.FrameLength = 8;
-	hsai_BlockA1.FrameInit.ActiveFrameLength = 1;
-	hsai_BlockA1.FrameInit.FSDefinition = SAI_FS_STARTFRAME;
-	hsai_BlockA1.FrameInit.FSPolarity = SAI_FS_ACTIVE_LOW;
-	hsai_BlockA1.FrameInit.FSOffset = SAI_FS_FIRSTBIT;
-	hsai_BlockA1.SlotInit.FirstBitOffset = 0;
-	hsai_BlockA1.SlotInit.SlotSize = SAI_SLOTSIZE_DATASIZE;
-	hsai_BlockA1.SlotInit.SlotNumber = 1;
-	hsai_BlockA1.SlotInit.SlotActive = 0x00000000;
-	if (HAL_SAI_Init(&hsai_BlockA1) != HAL_OK) {
-		Error_Handler();
-	}
-	hsai_BlockB1.Instance = SAI1_Block_B;
-	hsai_BlockB1.Init.Protocol = SAI_FREE_PROTOCOL;
-	hsai_BlockB1.Init.AudioMode = SAI_MODESLAVE_RX;
-	hsai_BlockB1.Init.DataSize = SAI_DATASIZE_8;
-	hsai_BlockB1.Init.FirstBit = SAI_FIRSTBIT_MSB;
-	hsai_BlockB1.Init.ClockStrobing = SAI_CLOCKSTROBING_FALLINGEDGE;
-	hsai_BlockB1.Init.Synchro = SAI_SYNCHRONOUS;
-	hsai_BlockB1.Init.OutputDrive = SAI_OUTPUTDRIVE_DISABLE;
-	hsai_BlockB1.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_EMPTY;
-	hsai_BlockB1.Init.SynchroExt = SAI_SYNCEXT_DISABLE;
-	hsai_BlockB1.Init.MonoStereoMode = SAI_STEREOMODE;
-	hsai_BlockB1.Init.CompandingMode = SAI_NOCOMPANDING;
-	hsai_BlockB1.Init.TriState = SAI_OUTPUT_NOTRELEASED;
-	hsai_BlockB1.FrameInit.FrameLength = 8;
-	hsai_BlockB1.FrameInit.ActiveFrameLength = 1;
-	hsai_BlockB1.FrameInit.FSDefinition = SAI_FS_STARTFRAME;
-	hsai_BlockB1.FrameInit.FSPolarity = SAI_FS_ACTIVE_LOW;
-	hsai_BlockB1.FrameInit.FSOffset = SAI_FS_FIRSTBIT;
-	hsai_BlockB1.SlotInit.FirstBitOffset = 0;
-	hsai_BlockB1.SlotInit.SlotSize = SAI_SLOTSIZE_DATASIZE;
-	hsai_BlockB1.SlotInit.SlotNumber = 1;
-	hsai_BlockB1.SlotInit.SlotActive = 0x00000000;
-	if (HAL_SAI_Init(&hsai_BlockB1) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN SAI1_Init 2 */
-
-	/* USER CODE END SAI1_Init 2 */
-
-}
-
-/**
- * @brief SPI2 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_SPI2_Init(void) {
-
-	/* USER CODE BEGIN SPI2_Init 0 */
-
-	/* USER CODE END SPI2_Init 0 */
-
-	/* USER CODE BEGIN SPI2_Init 1 */
-
-	/* USER CODE END SPI2_Init 1 */
-	/* SPI2 parameter configuration*/
-	hspi2.Instance = SPI2;
-	hspi2.Init.Mode = SPI_MODE_MASTER;
-	hspi2.Init.Direction = SPI_DIRECTION_2LINES;
-	hspi2.Init.DataSize = SPI_DATASIZE_4BIT;
-	hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
-	hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
-	hspi2.Init.NSS = SPI_NSS_SOFT;
-	hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-	hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
-	hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
-	hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-	hspi2.Init.CRCPolynomial = 7;
-	hspi2.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-	hspi2.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
-	if (HAL_SPI_Init(&hspi2) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN SPI2_Init 2 */
-
-	/* USER CODE END SPI2_Init 2 */
-
-}
-
-/**
- * @brief TIM4 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_TIM4_Init(void) {
-	Timer4Handle.Instance = TIM4;
-	Timer4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
-	Timer4Handle.Init.ClockDivision = 0;
-	Timer4Handle.Init.Prescaler = 1; // should be 1 for normal operation
-	Timer4Handle.Init.Period = 4000 / 0.8018; // 4Mhz/SAMPLING_RATE = 4000000/1000
-	__HAL_RCC_TIM4_CLK_ENABLE();
-	HAL_TIM_Base_Init(&Timer4Handle);
-	HAL_TIM_Base_Start_IT(&Timer4Handle);
-	HAL_NVIC_SetPriority(TIM4_IRQn, 7, 0); // middle priority
-	HAL_NVIC_EnableIRQ(TIM4_IRQn);
-
-}
 
 /**
  * @brief USART2 Initialization Function
  * @param None
  * @retval None
  */
-static void MX_USART2_UART_Init(void) {
+static void MX_USART1_UART_Init(void) {
 
-	/* USER CODE BEGIN USART2_Init 0 */
+	/* USER CODE BEGIN USART1_Init 0 */
 
-	/* USER CODE END USART2_Init 0 */
+	/* USER CODE END USART1_Init 0 */
 
-	/* USER CODE BEGIN USART2_Init 1 */
+	/* USER CODE BEGIN USART1_Init 1 */
 
-	/* USER CODE END USART2_Init 1 */
-	huart2.Instance = USART2;
-	huart2.Init.BaudRate = 57600;
-	huart2.Init.WordLength = UART_WORDLENGTH_8B;
-	huart2.Init.StopBits = UART_STOPBITS_1;
-	huart2.Init.Parity = UART_PARITY_NONE;
-	huart2.Init.Mode = UART_MODE_TX_RX;
-	huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-	huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-	huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-	if (HAL_UART_Init(&huart2) != HAL_OK) {
+	/* USER CODE END USART1_Init 1 */
+	huart1.Instance = USART1;
+	huart1.Init.BaudRate = 57600;
+	huart1.Init.WordLength = UART_WORDLENGTH_8B;
+	huart1.Init.StopBits = UART_STOPBITS_1;
+	huart1.Init.Parity = UART_PARITY_NONE;
+	huart1.Init.Mode = UART_MODE_TX_RX;
+	huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+	huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+	huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+	if (HAL_UART_Init(&huart1) != HAL_OK) {
 		Error_Handler();
 	}
 	/* USER CODE BEGIN USART2_Init 2 */
