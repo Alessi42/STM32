@@ -2398,22 +2398,23 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
  80016ea:	f000 fa8d 	bl	8001c08 <MX_GPIO_Init>
+  ADC_Init();
+ 80016ee:	f7ff fbf5 	bl	8000edc <ADC_Init>
   MX_LCD_Init();
- 80016ee:	f000 f955 	bl	800199c <MX_LCD_Init>
+ 80016f2:	f000 f953 	bl	800199c <MX_LCD_Init>
   MX_QUADSPI_Init();
- 80016f2:	f000 f98b 	bl	8001a0c <MX_QUADSPI_Init>
+ 80016f6:	f000 f989 	bl	8001a0c <MX_QUADSPI_Init>
   MX_SAI1_Init();
- 80016f6:	f000 f9af 	bl	8001a58 <MX_SAI1_Init>
+ 80016fa:	f000 f9ad 	bl	8001a58 <MX_SAI1_Init>
   MX_USB_HOST_Init();
- 80016fa:	f00a fae7 	bl	800bccc <MX_USB_HOST_Init>
+ 80016fe:	f00a fae5 	bl	800bccc <MX_USB_HOST_Init>
   //MX_ADC1_Init();
   MX_TIM4_Init();
- 80016fe:	f000 f915 	bl	800192c <MX_TIM4_Init>
+ 8001702:	f000 f913 	bl	800192c <MX_TIM4_Init>
   MX_USART1_UART_Init();
- 8001702:	f000 fa51 	bl	8001ba8 <MX_USART1_UART_Init>
+ 8001706:	f000 fa4f 	bl	8001ba8 <MX_USART1_UART_Init>
   /* USER CODE BEGIN 2 */
-  ADC_Init();
- 8001706:	f7ff fbe9 	bl	8000edc <ADC_Init>
+
 
 	BSP_LCD_GLASS_Init();
  800170a:	f000 ff41 	bl	8002590 <BSP_LCD_GLASS_Init>

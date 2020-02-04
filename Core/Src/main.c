@@ -188,6 +188,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  ADC_Init();
   MX_LCD_Init();
   MX_QUADSPI_Init();
   MX_SAI1_Init();
@@ -196,7 +197,7 @@ int main(void)
   MX_TIM4_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  ADC_Init();
+
 
 	BSP_LCD_GLASS_Init();
 
