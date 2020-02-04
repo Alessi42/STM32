@@ -257,7 +257,7 @@ int main(void) {
 
 			if (TRANSMIT_BDC_VALUES) {
 				// send value to display board
-				TransmitValues(0xd,0xc);
+				TransmitValues(0x5,0x5);
 			}
 
 		}
@@ -398,11 +398,9 @@ void SystemClock_Config(void) {
 		Error_Handler();
 	}
 	PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC
-			| RCC_PERIPHCLK_USART2 | RCC_PERIPHCLK_SAI1 | RCC_PERIPHCLK_I2C1
-			| RCC_PERIPHCLK_I2C2 | RCC_PERIPHCLK_USB | RCC_PERIPHCLK_ADC;
+			| RCC_PERIPHCLK_USART2 | RCC_PERIPHCLK_SAI1 | RCC_PERIPHCLK_USART1 | RCC_PERIPHCLK_USB | RCC_PERIPHCLK_ADC;
 	PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
-	PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
-	PeriphClkInit.I2c2ClockSelection = RCC_I2C2CLKSOURCE_PCLK1;
+	PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
 	PeriphClkInit.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLSAI1;
 	PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
 	PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
@@ -622,11 +620,18 @@ static void MX_GPIO_Init(void) {
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(MFX_WAKEUP_GPIO_Port, &GPIO_InitStruct);
 
+//	/*Configure GPIO pins : PB0 M3V3_REG_ON_Pin */
+//	GPIO_InitStruct.Pin = GPIO_PIN_0 | M3V3_REG_ON_Pin;
+//	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+//	GPIO_InitStruct.Pull = GPIO_NOPULL;
+//	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+//	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
 	/*Configure GPIO pins : PB0 M3V3_REG_ON_Pin */
-	GPIO_InitStruct.Pin = GPIO_PIN_0 | M3V3_REG_ON_Pin;
+	GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 	/*Configure GPIO pin : LD_R_Pin */
