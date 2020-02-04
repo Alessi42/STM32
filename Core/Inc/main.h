@@ -180,10 +180,10 @@ void Error_Handler(void);
 #define MEMS_MISO_GPIO_Port GPIOD
 #define MEMS_MOSI_Pin GPIO_PIN_4
 #define MEMS_MOSI_GPIO_Port GPIOD
-#define USART_TX_Pin GPIO_PIN_5
-#define USART_TX_GPIO_Port GPIOD
-#define USART_RX_Pin GPIO_PIN_6
-#define USART_RX_GPIO_Port GPIOD
+#define USART_TX_Pin GPIO_PIN_6
+#define USART_TX_GPIO_Port GPIOB
+#define USART_RX_Pin GPIO_PIN_7
+#define USART_RX_GPIO_Port GPIOB
 #define GYRO_CS_Pin GPIO_PIN_7
 #define GYRO_CS_GPIO_Port GPIOD
 #define M3V3_REG_ON_Pin GPIO_PIN_3
@@ -192,10 +192,6 @@ void Error_Handler(void);
 #define SEG11_GPIO_Port GPIOB
 #define SEG12_Pin GPIO_PIN_5
 #define SEG12_GPIO_Port GPIOB
-#define I2C1_SCL_Pin GPIO_PIN_6
-#define I2C1_SCL_GPIO_Port GPIOB
-#define I2C1_SDA_Pin GPIO_PIN_7
-#define I2C1_SDA_GPIO_Port GPIOB
 #define GYRO_INT2_Pin GPIO_PIN_8
 #define GYRO_INT2_GPIO_Port GPIOB
 #define COM3_Pin GPIO_PIN_9
