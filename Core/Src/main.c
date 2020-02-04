@@ -214,7 +214,7 @@ int main(void)
 	long start_tick, duration;
 
 	while (1) {
-		TransmitValues(0x5,0x5);
+//		TransmitValues(0x5,0x5);
 
 		/* USER CODE END WHILE */
 		start_tick = HAL_GetTick();
@@ -256,8 +256,9 @@ int main(void)
 
 			if (TRANSMIT_BDC_VALUES) {
 				// send value to display board
-				TransmitValues(0xd,0xc);
+				uint8_t speedMPH = hertz * 2.23694 * 0.0141683;
 
+				TransmitValues(speedMPH / 10,speedMPH % 10);
 			}
 
 		}
